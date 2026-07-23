@@ -43,6 +43,36 @@ def check_output_leak(answer: str) -> Check:
     return Check(True)
 
 
+# 근거 커버리지 2단 임계(ADR 0002) — 현재 data/ 3개 문서 실측 분포 기준.
+# 문서가 늘거나 검색기가 바뀌면 재캘리브레이션 대상.
+HARD_THRESHOLD = 0.15  # 미만이면 보류(LLM 미호출)
+SOFT_THRESHOLD = 0.40  # 미만이면 저신뢰
+
+EVIDENCE_BLOCK = "block"
+EVIDENCE_LOW = "low_confidence"
+EVIDENCE_OK = "ok"
+
+
+@dataclass
+class EvidenceCheck:
+    """3단 구간이라 2값 Check로 표현하지 않는다(ADR 0002)."""
+
+    level: str
+    reason: str = ""
+
+
+def check_evidence(coverage: float) -> EvidenceCheck:
+    """검색 커버리지로 보류 / 저신뢰 / 정상을 가른다. 경계는 `>=` 통과."""
+    if coverage < HARD_THRESHOLD:
+        return EvidenceCheck(
+            EVIDENCE_BLOCK,
+            "질문과 근거 문서의 겹침이 너무 적어 답변하지 않습니다. 아래 문서를 직접 확인해 주세요.",
+        )
+    if coverage < SOFT_THRESHOLD:
+        return EvidenceCheck(EVIDENCE_LOW)
+    return EvidenceCheck(EVIDENCE_OK)
+
+
 # 이메일 — 출력에서 차단이 아니라 부분 마스킹 대상(ADR 0001)
 _EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 

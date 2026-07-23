@@ -24,3 +24,32 @@ def test_mask_emails_partial():
 def test_mask_emails_no_email_unchanged():
     text = "연금저축 세액공제 한도는 가상 예시 기준 600만 원입니다."
     assert guardrails.mask_emails(text) == text
+
+
+# 근거 점수 게이트 — 2단 임계(ADR 0002)
+
+
+def test_evidence_zero_coverage_blocks_with_reason():
+    check = guardrails.check_evidence(0.0)
+    assert check.level == guardrails.EVIDENCE_BLOCK
+    assert check.reason
+
+
+def test_evidence_just_below_hard_blocks():
+    assert guardrails.check_evidence(0.14).level == guardrails.EVIDENCE_BLOCK
+
+
+def test_evidence_hard_boundary_is_low_confidence():
+    assert guardrails.check_evidence(0.15).level == guardrails.EVIDENCE_LOW
+
+
+def test_evidence_just_below_soft_is_low_confidence():
+    assert guardrails.check_evidence(0.39).level == guardrails.EVIDENCE_LOW
+
+
+def test_evidence_soft_boundary_is_ok():
+    assert guardrails.check_evidence(0.40).level == guardrails.EVIDENCE_OK
+
+
+def test_evidence_high_coverage_is_ok():
+    assert guardrails.check_evidence(0.75).level == guardrails.EVIDENCE_OK

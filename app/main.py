@@ -13,7 +13,12 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     question = " ".join(argv)
     result = ask(question)
-    prefix = "⛔ " if result.blocked else "✅ "
+    if result.blocked:
+        prefix = "⛔ "
+    elif result.low_confidence:
+        prefix = "⚠️ "
+    else:
+        prefix = "✅ "
     print(prefix + result.answer)
     if result.sources:
         print("근거:", ", ".join(result.sources))
