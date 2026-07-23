@@ -15,3 +15,12 @@ def test_scope_blocks_off_topic():
 
 def test_scope_allows_pension_question():
     assert guardrails.check_input_scope("연금저축 세액공제 한도는?").ok is True
+
+
+def test_mask_emails_partial():
+    assert guardrails.mask_emails("문의는 hong@example.com 으로") == "문의는 h***@e***.com 으로"
+
+
+def test_mask_emails_no_email_unchanged():
+    text = "연금저축 세액공제 한도는 가상 예시 기준 600만 원입니다."
+    assert guardrails.mask_emails(text) == text

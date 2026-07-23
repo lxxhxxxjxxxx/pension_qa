@@ -32,4 +32,4 @@ def ask(question: str) -> Result:
     if not leak.ok:
         return Result(leak.reason, sources=[d.name for d in docs], blocked=True)
 
-    return Result(raw, sources=[d.name for d in docs])
+    return Result(guardrails.mask_emails(raw), sources=[d.name for d in docs])

@@ -41,3 +41,16 @@ def check_output_leak(answer: str) -> Check:
         if pat.search(answer):
             return Check(False, "출력에 개인정보로 보이는 값이 있어 차단합니다.")
     return Check(True)
+
+
+# 이메일 — 출력에서 차단이 아니라 부분 마스킹 대상(ADR 0001)
+_EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+
+
+def mask_emails(text: str) -> str:
+    def _mask(m: re.Match) -> str:
+        local, domain = m.group(0).split("@", 1)
+        tld = domain.rsplit(".", 1)[-1]
+        return f"{local[0]}***@{domain[0]}***.{tld}"
+
+    return _EMAIL_PATTERN.sub(_mask, text)
