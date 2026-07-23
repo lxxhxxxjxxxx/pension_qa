@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "deny": ["Read(./secrets/**)", "Read(./**/*real*)", "Bash(rm -rf *)", "Bash(curl *)"],
+    "ask": ["Bash(git push *)"]
+  }
+}
