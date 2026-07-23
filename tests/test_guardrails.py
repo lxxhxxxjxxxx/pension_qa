@@ -53,3 +53,44 @@ def test_evidence_soft_boundary_is_ok():
 
 def test_evidence_high_coverage_is_ok():
     assert guardrails.check_evidence(0.75).level == guardrails.EVIDENCE_OK
+
+
+def test_mask_emails_multiple():
+    assert guardrails.mask_emails("a@x.com 또는 b@y.com") == "a***@x***.com 또는 b***@y***.com"
+
+
+def test_mask_emails_multi_dot_domain():
+    assert guardrails.mask_emails("hong@mail.co.kr") == "h***@m***.kr"
+
+
+def test_mask_emails_short_local():
+    assert guardrails.mask_emails("a@b.com") == "a***@b***.com"
+
+
+def test_mask_emails_no_false_positive():
+    for text in ["2026년 7@8 회차", "@연금팀"]:
+        assert guardrails.mask_emails(text) == text
+
+
+def test_input_masking_before_llm(monkeypatch):
+    from app import agent
+
+    seen = {}
+
+    def fake_answer(question, contexts):
+        seen["question"] = question
+        return "[stub] 답변"
+
+    monkeypatch.setattr(agent.llm, "answer", fake_answer)
+    agent.ask("연금저축 세액공제 한도가 얼마인가요 문의는 hong@example.com 으로")
+    assert "hong@example.com" not in seen["question"]
+    assert "h***@e***.com" in seen["question"]
+
+
+def test_input_masking_keeps_retrieval():
+    from app import retriever
+
+    q = "연금저축 세액공제 한도가 얼마인가요 문의는 hong@example.com 으로"
+    raw_docs = [d.name for d in retriever.search(q)]
+    masked_docs = [d.name for d in retriever.search(guardrails.mask_emails(q))]
+    assert raw_docs == masked_docs
