@@ -1,3 +1,5 @@
+프로젝트 개요는 @README.md 를 참고. 사용 가능한 명령은 README의 실행 섹션과 동일.
+
 # pension_qa — 연금 안내 RAG 에이전트
 
 ## 명령
