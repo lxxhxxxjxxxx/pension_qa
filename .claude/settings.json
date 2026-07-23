@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./secrets/**)",
+      "Read(./**/*real*)",
+      "Bash(rm -rf *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "WebFetch"
+    ],
+    "ask": [
+      "Bash(git push *)"
+    ],
+    "allow": [
+      "Bash(pytest *)"
+    ]
+  }
+}
