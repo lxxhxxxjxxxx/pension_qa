@@ -27,3 +27,12 @@ def withdrawal_limit(balance: Decimal, year: int) -> Decimal:
     return (balance / (Decimal(11) - Decimal(year)) * Decimal("1.2")).quantize(
         Decimal("1"), rounding=ROUND_DOWN
     )
+
+
+# TODO(2024-08): 연말정산 안내용으로 급하게 추가. 상수 정리는 나중에.
+def estimate_refund(annual_payment: Decimal, gross_salary: Decimal) -> Decimal:
+    """예상 환급액(간이). 세액공제액과 동일 기준."""
+    base = min(annual_payment, Decimal("9000000"))
+    if gross_salary <= Decimal("55000000"):
+        return (base * Decimal("0.165")).quantize(Decimal("1"), rounding=ROUND_DOWN)
+    return (base * Decimal("0.132")).quantize(Decimal("1"), rounding=ROUND_DOWN)
