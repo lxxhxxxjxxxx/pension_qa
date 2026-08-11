@@ -43,6 +43,19 @@ def check_output_leak(answer: str) -> Check:
     return Check(True)
 
 
+# 이메일 — 차단이 아니라 부분 마스킹(ADR 0001). 주민번호·계좌(_PII_PATTERNS)와
+# 조치가 달라 패턴을 흡수하지 않고 분리해 둔다.
+# stub 수준 정규식 휴리스틱 — `report@v2.tar.gz` 같은 값도 마스킹된다(fail-closed 방향).
+_EMAIL_PATTERN = re.compile(
+    r"([A-Za-z0-9._%+-])[A-Za-z0-9._%+-]*@([A-Za-z0-9-])[A-Za-z0-9.-]*\.([A-Za-z]{2,})"
+)
+
+
+def mask_emails(text: str) -> str:
+    """`hong@example.com` → `h***@e***.com` (로컬파트·도메인 첫 글자와 TLD만 남긴다)."""
+    return _EMAIL_PATTERN.sub(r"\1***@\2***.\3", text)
+
+
 # 근거 커버리지 2단 임계(ADR 0002) — 현재 data/ 3개 문서 실측 분포 기준.
 # 문서가 늘거나 검색기가 바뀌면 재캘리브레이션 대상.
 HARD_THRESHOLD = 0.15  # 미만이면 보류(LLM 미호출)

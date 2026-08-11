@@ -17,6 +17,35 @@ def test_scope_allows_pension_question():
     assert guardrails.check_input_scope("연금저축 세액공제 한도는?").ok is True
 
 
+# 이메일 마스킹 — 차단이 아니라 부분 마스킹(ADR 0001 / SPEC.md)
+
+
+def test_mask_email_in_sentence():
+    assert guardrails.mask_emails("문의는 hong@example.com 으로") == "문의는 h***@e***.com 으로"
+
+
+def test_mask_leaves_text_without_email_untouched():
+    text = "연금저축 세액공제 한도는 연 900만원입니다."
+    assert guardrails.mask_emails(text) == text
+
+
+def test_mask_all_emails_in_one_line():
+    assert guardrails.mask_emails("a@x.com 또는 b@y.com") == "a***@x***.com 또는 b***@y***.com"
+
+
+def test_mask_keeps_only_tld_for_multi_dot_domain():
+    assert guardrails.mask_emails("hong@mail.co.kr") == "h***@m***.kr"
+
+
+def test_mask_handles_single_char_local_part():
+    assert guardrails.mask_emails("a@b.com") == "a***@b***.com"
+
+
+def test_mask_ignores_at_sign_without_tld():
+    assert guardrails.mask_emails("2026년 7@8 회차") == "2026년 7@8 회차"
+    assert guardrails.mask_emails("@연금팀 문의") == "@연금팀 문의"
+
+
 # 근거 점수 게이트 — 2단 임계(ADR 0002)
 
 
