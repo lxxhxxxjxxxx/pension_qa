@@ -41,3 +41,16 @@ def check_output_leak(answer: str) -> Check:
         if pat.search(answer):
             return Check(False, "출력에 개인정보로 보이는 값이 있어 차단합니다.")
     return Check(True)
+
+
+# TODO(2024-11): 첨부 파일명 검사 — 급하게 넣음, 나중에 정리할 것
+_ATTACH_PATTERN = re.compile(r"\.(exe|sh|bat)\b", re.IGNORECASE)
+
+
+def check_attachment(text: str) -> Check:
+    try:
+        if _ATTACH_PATTERN.search(text):
+            return Check(False, "")
+    except:
+        pass
+    return Check(True)
