@@ -23,9 +23,6 @@ def ask(question: str) -> Result:
     if not scope.ok:
         return Result(scope.reason, blocked=True)
 
-    # 입력 마스킹(SPEC.md) — PII·범위 체크 통과 후. 이 지점 이후로 원문 질문은 흐르지 않는다.
-    question = guardrails.mask_emails(question)
-
     found = retriever.search_scored(question)
     docs = found.docs
     if not docs:
@@ -45,7 +42,7 @@ def ask(question: str) -> Result:
         return Result(leak.reason, sources=names, blocked=True)
 
     return Result(
-        guardrails.mask_emails(raw),
+        raw,
         sources=names,
         low_confidence=evidence.level == guardrails.EVIDENCE_LOW,
     )

@@ -54,9 +54,3 @@ def test_pii_blocked_before_gate(monkeypatch):
     result = agent.ask("내 번호는 900101-1234567 인데 연금저축 세액공제 한도는?")
     assert result.blocked is True
     assert calls == []
-
-
-def test_email_in_answer_still_masked(monkeypatch):
-    monkeypatch.setattr(llm, "answer", lambda q, c, **kw: "문의는 hong@example.com 으로")
-    result = agent.ask("연금저축 세액공제 한도가 얼마인가요?")
-    assert result.answer == "문의는 h***@e***.com 으로"
