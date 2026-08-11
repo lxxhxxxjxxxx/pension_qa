@@ -1,5 +1,5 @@
 """파이프라인 통합 — 근거 점수 게이트(ADR 0002)."""
-from app import agent, llm
+from app import agent, llm, main
 
 
 def _count_llm_calls(monkeypatch):
@@ -54,3 +54,36 @@ def test_pii_blocked_before_gate(monkeypatch):
     result = agent.ask("내 번호는 900101-1234567 인데 연금저축 세액공제 한도는?")
     assert result.blocked is True
     assert calls == []
+
+
+def test_email_in_answer_still_masked(monkeypatch):
+    monkeypatch.setattr(llm, "answer", lambda q, c, **kw: "문의는 hong@example.com 으로")
+    result = agent.ask("연금저축 세액공제 한도가 얼마인가요?")
+    assert result.answer == "문의는 h***@e***.com 으로"
+
+
+def test_cli_renders_answer_and_sources(monkeypatch, capsys):
+    """CLI가 읽는 Result 필드(answer·sources·blocked·low_confidence) 계약 확인."""
+    monkeypatch.setattr(llm, "answer", lambda q, c, **kw: "가상 예시 기준 900만원입니다.")
+    assert main.main(["IRP", "수령", "요건", "알려줘"]) == 0
+    out = capsys.readouterr().out
+    assert out.startswith("✅ ")
+    assert "근거: IRP_수령요건" in out
+
+
+def test_cli_marks_blocked_answer(monkeypatch, capsys):
+    calls = _count_llm_calls(monkeypatch)
+    main.main(["연금저축", "관련해서", "요즘", "날씨랑", "점심", "메뉴", "뭐가", "좋을까요"])
+    out = capsys.readouterr().out
+    assert out.startswith("⛔ ")
+    assert "근거:" in out
+    assert calls == []
+
+
+def test_output_leak_blocks_but_keeps_sources(monkeypatch):
+    """차단 경로도 근거 문서 이름은 채운다(CLAUDE.md 컨벤션 — 리팩터 회귀 방지)."""
+    monkeypatch.setattr(llm, "answer", lambda q, c, **kw: "가입자 주민번호는 900101-1234567 입니다")
+    result = agent.ask("연금저축 세액공제 한도가 얼마인가요?")
+    assert result.blocked is True
+    assert "900101-1234567" not in result.answer
+    assert result.sources

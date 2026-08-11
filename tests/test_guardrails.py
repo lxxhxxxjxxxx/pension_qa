@@ -17,6 +17,61 @@ def test_scope_allows_pension_question():
     assert guardrails.check_input_scope("연금저축 세액공제 한도는?").ok is True
 
 
+# 이메일 마스킹 — 차단이 아니라 부분 마스킹(ADR 0001·SPEC.md 검증표)
+
+
+def test_mask_emails_partial():
+    assert guardrails.mask_emails("문의는 hong@example.com 으로") == "문의는 h***@e***.com 으로"
+
+
+def test_mask_emails_no_email_unchanged():
+    text = "연금저축 세액공제 한도는 가상 예시 기준 900만 원입니다."
+    assert guardrails.mask_emails(text) == text
+
+
+def test_mask_emails_multiple():
+    assert guardrails.mask_emails("a@x.com 또는 b@y.com") == "a***@x***.com 또는 b***@y***.com"
+
+
+def test_mask_emails_multi_dot_domain():
+    assert guardrails.mask_emails("hong@mail.co.kr") == "h***@m***.kr"
+
+
+def test_mask_emails_short_local():
+    assert guardrails.mask_emails("a@b.com") == "a***@b***.com"
+
+
+def test_mask_emails_no_false_positive():
+    for text in ["2026년 7@8 회차", "@연금팀"]:
+        assert guardrails.mask_emails(text) == text
+
+
+def test_input_masking_before_llm(monkeypatch):
+    """원문 이메일이 외부 LLM 호출로 넘어가지 않는다(SPEC.md 7번)."""
+    from app import agent
+
+    seen = {}
+
+    def fake_answer(question, contexts):
+        seen["question"] = question
+        return "[stub] 답변"
+
+    monkeypatch.setattr(agent.llm, "answer", fake_answer)
+    agent.ask("연금저축 세액공제 한도가 얼마인가요 문의는 hong@example.com 으로")
+    assert "hong@example.com" not in seen["question"]
+    assert "h***@e***.com" in seen["question"]
+
+
+def test_input_masking_keeps_retrieval():
+    """입력 마스킹이 검색 리콜을 떨어뜨리지 않는다(SPEC.md 8번)."""
+    from app import retriever
+
+    q = "연금저축 세액공제 한도가 얼마인가요 문의는 hong@example.com 으로"
+    raw_docs = [d.name for d in retriever.search(q)]
+    masked_docs = [d.name for d in retriever.search(guardrails.mask_emails(q))]
+    assert raw_docs == masked_docs
+
+
 # 근거 점수 게이트 — 2단 임계(ADR 0002)
 
 
