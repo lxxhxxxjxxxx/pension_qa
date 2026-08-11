@@ -9,6 +9,22 @@ def test_pii_allows_plain_question():
     assert guardrails.check_input_pii("IRP 연금 수령 요건이 뭐예요?").ok is True
 
 
+def test_pii_blocks_phone_number():
+    assert guardrails.check_input_pii("연락처는 010-1234-5678 이에요").ok is False
+    assert guardrails.check_input_pii("연락처는 01012345678 이에요").ok is False
+    assert guardrails.check_input_pii("사무실은 02-123-4567 입니다").ok is False
+    assert guardrails.check_input_pii("해외에서는 +82-10-1234-5678").ok is False
+
+
+def test_pii_allows_pension_amounts():
+    assert guardrails.check_input_pii("연금저축 납입한도가 1,800,000원 맞나요?").ok is True
+    assert guardrails.check_input_pii("2024년부터 연금 수령하면 세금은?").ok is True
+
+
+def test_output_leak_blocks_phone_number():
+    assert guardrails.check_output_leak("담당자 연락처는 010-1234-5678 입니다").ok is False
+
+
 def test_scope_blocks_off_topic():
     assert guardrails.check_input_scope("오늘 점심 메뉴 추천해줘").ok is False
 
