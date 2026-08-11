@@ -45,8 +45,12 @@ def check_output_leak(answer: str) -> Check:
 
 # 근거 커버리지 2단 임계(ADR 0002) — 현재 data/ 3개 문서 실측 분포 기준.
 # 문서가 늘거나 검색기가 바뀌면 재캘리브레이션 대상.
+#
+# IDF 가중 커버리지로 검색기를 바꾸면서 재캘리브레이션했다(ADR 0003).
+# 실측 21개 질문에서 확실한 구간은 0.15 아래(근거 없음)와 0.50 위(근거 확실)로 갈렸고,
+# 그 사이는 답할 수 있는 질문과 없는 질문이 섞여 나온다 — 그래서 저신뢰 구간이다.
 HARD_THRESHOLD = 0.15  # 미만이면 보류(LLM 미호출)
-SOFT_THRESHOLD = 0.40  # 미만이면 저신뢰
+SOFT_THRESHOLD = 0.50  # 미만이면 저신뢰
 
 EVIDENCE_BLOCK = "block"
 EVIDENCE_LOW = "low_confidence"
@@ -71,3 +75,19 @@ def check_evidence(coverage: float) -> EvidenceCheck:
     if coverage < SOFT_THRESHOLD:
         return EvidenceCheck(EVIDENCE_LOW)
     return EvidenceCheck(EVIDENCE_OK)
+
+
+# 이메일 — 출력에서 차단이 아니라 부분 마스킹 대상(ADR 0001).
+# 차단(주민번호·계좌)과 조치가 다르므로 `_PII_PATTERNS`에 흡수하지 않고 분리해 둔다(SPEC.md).
+_EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+
+
+def mask_emails(text: str) -> str:
+    """`hong@example.com` → `h***@e***.com`. 입력·출력 양쪽 경로에서 쓴다."""
+
+    def _mask(m: re.Match) -> str:
+        local, domain = m.group(0).split("@", 1)
+        tld = domain.rsplit(".", 1)[-1]
+        return f"{local[0]}***@{domain[0]}***.{tld}"
+
+    return _EMAIL_PATTERN.sub(_mask, text)
