@@ -7,10 +7,13 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-# 주민등록번호 / 계좌·카드번호 비슷한 패턴
+# 주민등록번호 / 계좌·카드번호 / 전화번호 비슷한 패턴
 _PII_PATTERNS = [
     re.compile(r"\d{6}[- ]?\d{7}"),          # 주민등록번호
     re.compile(r"\d{3,4}[- ]\d{2,6}[- ]\d{3,6}"),  # 계좌/카드
+    re.compile(r"(?<!\d)01[016789][- ]?\d{3,4}[- ]?\d{4}(?!\d)"),   # 휴대폰
+    re.compile(r"(?<!\d)0\d{1,2}[- ]\d{3,4}[- ]\d{4}(?!\d)"),       # 지역번호 유선
+    re.compile(r"\+82[- ]?1[016789][- ]?\d{3,4}[- ]?\d{4}(?!\d)"),  # 국제표기
 ]
 
 # 연금 범위 키워드(범위 판정 휴리스틱)
