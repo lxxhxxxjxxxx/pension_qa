@@ -16,7 +16,9 @@ def main(argv: list[str] | None = None) -> int:
     prefix = "⛔ " if result.blocked else "✅ "
     print(prefix + result.answer)
     if result.sources:
-        print("근거:", ", ".join(result.sources))
+        print("근거:", ", ".join(f"{s.name}({s.score})" for s in result.sources))
+    for note in result.notes:
+        print("ℹ️ ", note)
     return 0
 
 
