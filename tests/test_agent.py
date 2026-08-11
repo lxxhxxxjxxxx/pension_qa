@@ -54,3 +54,14 @@ def test_pii_blocked_before_gate(monkeypatch):
     result = agent.ask("내 번호는 900101-1234567 인데 연금저축 세액공제 한도는?")
     assert result.blocked is True
     assert calls == []
+
+
+def test_answer_email_is_masked_not_blocked(monkeypatch):
+    """출력 이메일은 차단이 아니라 마스킹(ADR 0001)."""
+    monkeypatch.setattr(
+        llm, "answer", lambda question, contexts, **kw: "문의는 hong@example.com 으로 주세요."
+    )
+    result = agent.ask("IRP 수령 요건 알려줘")
+    assert result.blocked is False
+    assert result.answer == "문의는 h***@e***.com 으로 주세요."
+    assert result.sources

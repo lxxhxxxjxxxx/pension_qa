@@ -16,6 +16,10 @@ _PII_PATTERNS = [
 # 연금 범위 키워드(범위 판정 휴리스틱)
 _SCOPE_KEYWORDS = ["연금", "IRP", "퇴직", "수령", "공제", "납입", "과세", "소득", "해지", "저축"]
 
+# 이메일은 차단이 아니라 마스킹한다(ADR 0001). 조치가 다르므로 _PII_PATTERNS에 흡수하지 않고 분리 유지.
+# ⚠️ 정규식 휴리스틱 stub — TLD 유무로만 이메일을 가른다.
+_EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")
+
 
 @dataclass
 class Check:
@@ -41,6 +45,24 @@ def check_output_leak(answer: str) -> Check:
         if pat.search(answer):
             return Check(False, "출력에 개인정보로 보이는 값이 있어 차단합니다.")
     return Check(True)
+
+
+def _mask_one(match: re.Match[str]) -> str:
+    local, domain = match.group(0).split("@", 1)
+    tld = domain.rsplit(".", 1)[1]
+    return f"{local[0]}***@{domain[0]}***.{tld}"
+
+
+def mask_emails(text: str) -> str:
+    """이메일을 부분 마스킹한다 — `hong@example.com` → `h***@e***.com`.
+
+    로컬파트와 도메인은 첫 글자만 남기고, 도메인 뒤에는 TLD만 붙인다
+    (`hong@mail.co.kr` → `h***@m***.kr` — 중간 레이블 `co`는 버린다).
+    TLD가 없는 `@`(`7@8`, `@연금팀`)는 이메일로 보지 않는다.
+
+    fail-closed 방향이라 `report@v2.tar.gz` 같은 조합을 과하게 마스킹할 수 있다(SPEC.md 알려진 한계).
+    """
+    return _EMAIL_PATTERN.sub(_mask_one, text)
 
 
 # 근거 커버리지 2단 임계(ADR 0002) — 현재 data/ 3개 문서 실측 분포 기준.
