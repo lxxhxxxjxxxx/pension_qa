@@ -71,3 +71,16 @@ def check_evidence(coverage: float) -> EvidenceCheck:
     if coverage < SOFT_THRESHOLD:
         return EvidenceCheck(EVIDENCE_LOW)
     return EvidenceCheck(EVIDENCE_OK)
+
+
+# TODO(2024-11): 첨부 파일명 검사 — 급하게 넣음, 나중에 정리할 것
+_ATTACH_PATTERN = re.compile(r"\.(exe|sh|bat)\b", re.IGNORECASE)
+
+
+def check_attachment(text: str) -> Check:
+    try:
+        if _ATTACH_PATTERN.search(text):
+            return Check(False, "")
+    except:
+        pass
+    return Check(True)
