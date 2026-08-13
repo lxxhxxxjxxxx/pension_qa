@@ -1,4 +1,4 @@
-"""오케스트레이션: 입력 가드레일 → 검색 → LLM → 출력 가드레일."""
+"""오케스트레이션: 입력 정제 → 입력 가드레일 → 검색 → LLM → 출력 가드레일."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -14,6 +14,13 @@ class Result:
 
 
 def ask(question: str) -> Result:
+    # 정제를 가장 먼저 — 이후 단계는 모두 정제된 텍스트를 본다.
+    # (제로폭 문자로 쪼갠 주민번호가 PII 검사를 통과하는 걸 막는다.)
+    clean = guardrails.check_input_sanitize(question)
+    if not clean.ok:
+        return Result(clean.reason, blocked=True)
+    question = clean.text
+
     pii = guardrails.check_input_pii(question)
     if not pii.ok:
         return Result(pii.reason, blocked=True)
