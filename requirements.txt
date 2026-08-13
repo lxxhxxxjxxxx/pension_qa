@@ -1,2 +1,5 @@
 # LLM 호출용(선택). 없으면 stub로 동작.
 anthropic>=0.40
+
+# 입력 정제용 HTML sanitize 유틸(선택). 없으면 정규식 대체로 동작.
+nh3>=0.2
