@@ -7,7 +7,7 @@
 ## 동작
 
 ```
-질문 → [입력 가드레일] → 문서 검색 → LLM 답변 → [출력 가드레일] → 답변+근거
+질문 → [입력 정제] → [입력 가드레일] → 문서 검색 → LLM 답변 → [출력 가드레일] → 답변+근거
 ```
 
 ## 실행
@@ -22,7 +22,8 @@ python -m app.main "연금저축 세액공제 한도가 얼마인가요?"
 ## 구조
 
 - `app/retriever.py` — 문서 검색(단순 키워드 스코어)
-- `app/guardrails.py` — 입력(PII·범위)·출력(유출) 가드레일
+- `app/sanitize.py` — 입력 정제 유틸(유니코드 정규화·제로폭/제어문자·HTML 제거)
+- `app/guardrails.py` — 입력(정제·PII·범위)·출력(유출) 가드레일
 - `app/llm.py` — LLM 클라이언트(Anthropic, 없으면 stub)
 - `app/agent.py` — 오케스트레이션
 - `app/pension_calc.py` — 연금 계산 유틸(Decimal 전용 — 아직 답변 파이프라인 미연결)
