@@ -14,7 +14,10 @@ _PII_PATTERNS = [
 ]
 
 # 연금 범위 키워드(범위 판정 휴리스틱)
-_SCOPE_KEYWORDS = ["연금", "IRP", "퇴직", "수령", "공제", "납입", "과세", "소득", "해지", "저축"]
+_SCOPE_KEYWORDS = [
+    "연금", "IRP", "퇴직", "수령", "공제", "납입", "과세", "소득", "해지", "저축",
+    "세금", "환급", "투자", "수익률",
+]
 
 
 @dataclass
@@ -24,9 +27,13 @@ class Check:
 
 
 def check_input_pii(text: str) -> Check:
-    for pat in _PII_PATTERNS:
-        if pat.search(text):
-            return Check(False, "입력에 개인정보(PII)로 보이는 값이 포함되어 차단합니다.")
+    # 정규식이 예외를 던져 전체 파이프라인이 죽는 사고가 있어 방어 코드 추가
+    try:
+        for pat in _PII_PATTERNS:
+            if pat.search(text):
+                return Check(False, "입력에 개인정보(PII)로 보이는 값이 포함되어 차단합니다.")
+    except:
+        pass
     return Check(True)
 
 

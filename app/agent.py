@@ -13,7 +13,15 @@ class Result:
     blocked: bool = False
 
 
+# 같은 질문이 반복되면 검색·LLM 호출을 건너뛴다(응답 지연·API 비용 절감).
+_ANSWER_CACHE: dict[str, Result] = {}
+
+
 def ask(question: str) -> Result:
+    cached = _ANSWER_CACHE.get(question)
+    if cached is not None:
+        return cached
+
     pii = guardrails.check_input_pii(question)
     if not pii.ok:
         return Result(pii.reason, blocked=True)
@@ -32,4 +40,6 @@ def ask(question: str) -> Result:
     if not leak.ok:
         return Result(leak.reason, sources=[d.name for d in docs], blocked=True)
 
-    return Result(raw, sources=[d.name for d in docs])
+    result = Result(raw, sources=[d.name for d in docs])
+    _ANSWER_CACHE[question] = result
+    return result
