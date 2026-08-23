@@ -6,7 +6,8 @@
       "Bash(rm -rf *)",
       "Bash(curl *)",
       "Bash(wget *)",
-      "WebFetch"
+      "WebFetch",
+      "Edit(tests/**)"
     ],
     "ask": [
       "Bash(git push *)"
@@ -16,6 +17,41 @@
       "Bash(python -m pytest:*)",
       "Bash(git diff:*)",
       "Bash(grep:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(python3 -c \"import json,sys;print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))\"); case \"$f\" in *.py) python3 -m black -q \"$f\";; esac; true"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(rm *)",
+            "command": "echo 'rm은 훅으로 차단(데모)' >&2; exit 2"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\"; out=$(python3 -m pytest -q 2>&1) || { echo \"$out\" >&2; echo '테스트 통과까지 계속' >&2; exit 2; }"
+          }
+        ]
+      }
     ]
   }
 }
