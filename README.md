@@ -1,3 +1,64 @@
+> 📚 **이 레포는 강의 「AI 엔지니어를 위한 프로덕트 엔지니어링」의 실습 레포입니다.**
+> `main`은 **아무것도 깔리지 않은 출발점**(빈 `.claude/`)입니다. 강별로 브랜치가 있습니다.
+
+## 강의별 브랜치 지도
+
+각 강의 **끝점** 브랜치를 체크아웃하면 그 강을 마쳤을 때 레포가 어떤 상태인지 그대로 보입니다.
+브랜치를 옮기면 이 README 맨 위 안내도 그 강 내용으로 바뀝니다.
+
+```bash
+git clone git@github.com:lxxhxxxjxxxx/pension_qa.git && cd pension_qa
+git checkout ch1-05-done      # 05강까지 마친 상태
+git diff ch1-05-start..ch1-05-done --stat    # 05강이 뭘 채웠는지
+```
+
+**시작점 = 직전 강의 끝점**입니다. 07강부터 해보고 싶으면 `ch1-07-start`(= `ch1-06-done`)를 체크아웃하세요.
+
+| 강 | 시작점 | 끝점 | 이 강이 레포에 채우는 것 | pytest |
+|---|---|---|---|---|
+| 01 순정 페인포인트·5 구성요소 | `ch1-01-start` | `ch1-01-done` | — 개념강(빈 `.claude/`가 교재) | 11 |
+| 02 주입 컨텍스트 CLAUDE.md | `ch1-02-start` | `ch1-02-done` | `CLAUDE.md` 4덩어리 | 11 |
+| 03 문서 하네스화 | `ch1-03-start` | `ch1-03-done` | `.claude/rules/guardrails.md` · `@import` | 11 |
+| 04 memory 협업 사고 | `ch1-04-start` | `ch1-04-done` | CLAUDE.md 컨벤션 한 줄(메모리→커밋되는 곳) | 11 |
+| 05 암묵 제약 명시화 | `ch1-05-start` | `ch1-05-done` | `.claude/settings.json` permissions · `secrets/` | 11 |
+| 06 요구→명세→ADR-first | `ch1-06-start` | `ch1-06-done` | `SPEC*.md` · `/adr` · ADR 0001·0002 · 근거 게이트 | 25 |
+| 07 서브에이전트 4역할 | `ch1-07-start` | `ch1-07-done` | `.claude/agents/` 4개 · 입력 마스킹 구현 | 31 |
+| 08 [파이널] 하네스 구축 | `ch1-08-start` | `ch1-08-done` | 용어집·결정 기록 규칙 · `harness_check.sh` · ADR 0003 | 31 |
+| 09 [안티패턴] 개발 단계 진단 | `ch1-08-done` | `ch2-09-done` | — 진단강(실측은 `ch2-09-*`) | 31 |
+| 10 [페인포인트] 레거시 답습 | `ch2-09-done` | `ch2-10-done` | — 진단강(실측은 `ch2-10-*`) | 31 |
+| 11 hallucination 6패턴 | `ch2-11-start` | `ch2-11-done` | — 개념·실측강(`ch2-11-sanitize-run*`) | 31 |
+| 12 Skills 기본 | `ch2-12-start` | `ch2-12-done` | — 개인 스코프 스킬(`~/.claude/skills/`) | 31 |
+| 13 [실습] 코드리뷰 Skill | `ch2-12-done` | `ch2-13-done` | `.claude/skills/code-review/` | 31 |
+| 14 Hooks 안전장치 | `ch2-14-start` | `ch2-14-done` | settings.json hooks 3종 + deny | 31 |
+| 15 테스트 품질 · mutation | `ch2-15-start` | `ch2-15-done` | `setup.cfg` · 테스트 보강 · ADR 0004 | 38 |
+
+> 09·10·13강은 시작점 브랜치 이름이 촬영용으로 먼저 쓰이고 있어서, 표의 직전 끝점을 그대로 쓰면 됩니다.
+
+### 실습·비교용 브랜치 (본 체인과 별개)
+
+같은 요청을 여러 번 돌린 **실측 결과**나, 리뷰·디버깅 연습용 상태입니다.
+
+| 브랜치 | 쓰임 |
+|---|---|
+| `ch2-09-start` · `ch2-09-run1~3` · `-alt-noverify` · `-alt-noharness` | 09강 — 같은 요청 3회가 갈리는 실측(+ 조건이 다른 별건 2종) |
+| `ch2-10-start` · `run1~3` · `control` · `subtle-*` · `harness-*` | 10강 — 레거시 주입/대조군/미묘 패턴/하네스 유무 |
+| `ch2-11-sanitize-run1~3` | 11강 — 같은 프롬프트 3회, 접근·변경량·테스트 수가 전부 다름 |
+| `ch2-13-start` · `ch2-13-pr` | 13강 — 리뷰 대상 나쁜 PR 3종. `git diff HEAD~1`로 본다 |
+| `ch2-14-buggy` | 14강 — `tax_credit` 한도 미적용 버그(`1 failed, 10 passed`) |
+| `ch1-08-final` | 08강 통합 빌드(체인이 아니라 `ch1-start`에서 재구축한 별도 히스토리) |
+
+### 환경
+
+```bash
+pip install -r requirements.txt
+pip install pytest            # requirements.txt에는 없다
+python -m pytest -q
+```
+
+14강은 `black`, 15강은 `mutmut coverage`가 추가로 필요합니다.
+
+<!-- /강의안내 -->
+
 # pension_qa — 연금 안내 Q&A 에이전트
 
 사용자의 연금(연금저축·IRP·연금소득세) 질문에 **사내 연금 가이드 문서를 검색(RAG)** 해서 근거와 함께 답하는 작은 LLM 프로덕트.
