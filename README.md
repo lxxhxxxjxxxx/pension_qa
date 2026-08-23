@@ -1,30 +1,34 @@
-> 📚 **강의 스냅샷 — 14강을 마친 상태입니다.**  
-> 시작점 `ch2-14-start` → **지금 여기 `ch2-14-done`** → 다음 강 시작점 `ch2-15-start`
+> 📚 **강의 스냅샷 — 15강을 마친 상태입니다.**  
+> 시작점 `ch2-15-start` → **지금 여기 `ch2-15-done`**
 
-## 14강 · Hooks — 바닥을 올리는 안전장치
+## 15강 · 테스트 품질 추적 — mutation score
 
-게이트를 **자동·무조건** 실행시킨다. "테스트 돌려"라고 안 했는데 통과가 보장된다.
+14강이 보장한 "테스트 통과"가 **진짜인지** 검증한다. 라인 커버리지 100%인데 검증은 0일 수 있다.
 
 **배우는 것**
 
-- **exit 2만 차단**한다. exit 1은 비차단 — 실측으로 확인
-- PostToolUse: 편집마다 포맷 / PreToolUse: 위험 명령 차단 / **Stop: 테스트 통과까지 턴 종료 차단**
-- Stop 훅 명령 두 곳이 성패를 가른다 — `2>&1`(실패 내용을 stderr로 보여야 고친다) · `cd "$CLAUDE_PROJECT_DIR"`(훅은 모델 셸의 cwd를 물려받는다)
-- 게이밍 방어: 테스트를 고쳐 초록불 만드는 우회는 `Edit(tests/**)` deny로 봉인
-- 단일 훅은 뚫린다(Bash `rm`만 보면 `os.remove`로 우회) — **벽이 아니라 층**
+- assert 없는 테스트도 커버리지는 100%를 만든다 — "실행됐나 ≠ 검증됐나"
+- mutation testing: 코드에 작은 버그를 심고 테스트가 잡나 본다. survived = **약한 테스트의 정확한 위치**
+- score를 결정적 게이트로(임계 80%). 느리니 핵심 모듈만·CI 주기로
+- equivalent mutant 때문에 100%는 원래 불가 — 억지로 죽이면 문자열을 베끼는 **과적합 테스트**가 된다
 
 **이 브랜치에 들어온 것**
 
-- `.claude/settings.json` hooks 3종(PostToolUse · PreToolUse · Stop) + deny `Edit(tests/**)`
+- `setup.cfg` — mutmut `source_paths` + pytest `norecursedirs = mutants`
+- `tests/test_guardrails.py` 보강 — 출력 유출 판정·차단 사유 검증(mutation 44/64 → **53/64, 82.8%**)
+- `docs/adr/0004-mutation-gate.md` — 임계 80% 결정
+- 14강 `Edit(tests/**)` deny 해제 — 테스트를 늘리는 게 이 강의 작업이라서
 
-> 연습용 버그는 **`ch2-14-buggy`** — `tax_credit`에 한도 미적용(`1 failed, 10 passed`).
-> 커밋 메시지는 `perf: tax_credit 한도 계산 단순화`로 성능 개선 PR처럼 보이게 해뒀다.
+> ⚠️ `setup.cfg`의 `norecursedirs = mutants`가 없으면 `mutmut run` 뒤 평범한 `pytest`가 수집 에러로 죽고,
+> **14강 Stop 훅이 영구 실패**한다. 이 브랜치는 그걸 넣은 상태다.
 
 **확인해 보기**
 
 ```bash
-python -m pytest -q        # 31 passed
-# 훅 동작 확인 전 `pip install black pytest`
+pip install mutmut coverage
+mutmut run "app.guardrails*"
+mutmut results | grep survived   # 11개(전부 equivalent·문자열 변형)
+python -m pytest -q        # 38 passed
 ```
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
