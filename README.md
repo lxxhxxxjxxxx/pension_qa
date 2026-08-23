@@ -31,6 +31,7 @@ git diff ch1-05-start..ch1-05-done --stat    # 05강이 뭘 채웠는지
 | 13 [실습] 코드리뷰 Skill | `ch2-12-done` | `ch2-13-done` | `.claude/skills/code-review/` | 31 |
 | 14 Hooks 안전장치 | `ch2-14-start` | `ch2-14-done` | settings.json hooks 3종 + deny | 31 |
 | 15 테스트 품질 · mutation | `ch2-15-start` | `ch2-15-done` | `setup.cfg` · 테스트 보강 · ADR 0004 | 38 |
+| 16 [파이널] 버그 PR 자동 적발 | `ch2-16-start` | `ch2-16-done`(촬영 후) | 버그 PR을 4겹으로 적발 · fail-closed 테스트 보강 | 38 |
 
 > 09·10·13강은 시작점 브랜치 이름이 촬영용으로 먼저 쓰이고 있어서, 표의 직전 끝점을 그대로 쓰면 됩니다.
 
@@ -45,6 +46,7 @@ git diff ch1-05-start..ch1-05-done --stat    # 05강이 뭘 채웠는지
 | `ch2-11-sanitize-run1~3` | 11강 — 같은 프롬프트 3회, 접근·변경량·테스트 수가 전부 다름 |
 | `ch2-13-start` · `ch2-13-pr` | 13강 — 리뷰 대상 나쁜 PR 3종. `git diff HEAD~1`로 본다 |
 | `ch2-14-buggy` | 14강 — `tax_credit` 한도 미적용 버그(`1 failed, 10 passed`) |
+| `ch2-16-buggy` | 16강 — 근거 문서에 **낡은 한도(700만)** 가 심긴 상태. 테스트·grep·mutation 어디에도 안 걸린다(`38 passed`) — 판단 버그가 게이트를 통과하는 걸 보이는 용도 |
 | `ch1-08-final` | 08강 통합 빌드(체인이 아니라 `ch1-start`에서 재구축한 별도 히스토리) |
 
 ### 환경
