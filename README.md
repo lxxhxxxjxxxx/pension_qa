@@ -1,3 +1,32 @@
+> 📚 **강의 스냅샷 — 07강을 마친 상태입니다.**  
+> 시작점 `ch1-07-start` → **지금 여기 `ch1-07-done`** → 다음 강 시작점 `ch1-08-start`
+
+## 07강 · 서브에이전트 4역할 + 스펙 주도 개발
+
+탐색·구현·리뷰·검증을 4역할로 분업하고, **도구 제한으로 역할을 강제**한다.
+
+**배우는 것**
+
+- `.claude/agents/*.md`의 `tools:`가 역할을 강제한다 — reviewer는 Write가 없어서 못 고친다
+- 별도 컨텍스트에서 도니 "자기 코드 자기 리뷰" bias가 빠진다
+- `model:`로 라우팅 — explorer·verifier는 haiku, implementer는 sonnet
+- 06강 SPEC이 분업의 "스펙" 노릇을 한다
+
+**이 브랜치에 들어온 것**
+
+- `.claude/agents/{explorer,implementer,reviewer,verifier}.md`
+- 입력 이메일 마스킹 구현(SPEC.md 이행 — 검색·LLM엔 마스킹본만) + 테스트
+
+**확인해 보기**
+
+```bash
+git diff ch1-07-start..ch1-07-done --stat
+python -m pytest -q        # 31 passed
+```
+
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+<!-- /강의안내 -->
+
 # pension_qa — 연금 안내 Q&A 에이전트
 
 사용자의 연금(연금저축·IRP·연금소득세) 질문에 **사내 연금 가이드 문서를 검색(RAG)** 해서 근거와 함께 답하는 작은 LLM 프로덕트.
