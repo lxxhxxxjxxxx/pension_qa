@@ -1,3 +1,33 @@
+> 📚 **강의 스냅샷 — 08강을 마친 상태입니다.**  
+> 시작점 `ch1-08-start` → **지금 여기 `ch1-08-done`** → **09강도 이 브랜치에서 시작**
+
+## 08강 · [파이널] 문서 없는 레포에 컨텍스트 하네스 구축
+
+Ch1 전체를 한 세션에 통합하고, **사람 판단 0인 채점 스크립트**로 닫는다.
+
+**배우는 것**
+
+- CLAUDE.md · rules · settings · agents · ADR 다섯을 한 레포에 겹쳐 쌓는다
+- 도메인 용어집이 설계 제안이 도메인 밖으로 튀는 걸 잡는 기준선이 된다
+- `harness_check.sh` = 결정적 채점 첫 점등 — grep·ls만으로 6항목 판정
+- 체크리스트 5개에 체크 안 되면 그 레포는 아직 "빈 `.claude/`"다
+
+**이 브랜치에 들어온 것**
+
+- `CLAUDE.md` 도메인 용어집 + 결정 기록 규칙
+- `harness_check.sh` — PASS 6/6
+- `docs/adr/0003-guardrail-architecture.md`
+
+**확인해 보기**
+
+```bash
+bash harness_check.sh      # PASS 6/6
+python -m pytest -q        # 31 passed
+```
+
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+<!-- /강의안내 -->
+
 # pension_qa — 연금 안내 Q&A 에이전트
 
 사용자의 연금(연금저축·IRP·연금소득세) 질문에 **사내 연금 가이드 문서를 검색(RAG)** 해서 근거와 함께 답하는 작은 LLM 프로덕트.
