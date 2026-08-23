@@ -1,31 +1,30 @@
-> 📚 **강의 스냅샷 — 13강을 마친 상태입니다.**  
-> 시작점 `ch2-12-done` → **지금 여기 `ch2-13-done`** → 다음 강 시작점 `ch2-14-start`
+> 📚 **강의 스냅샷 — 14강을 마친 상태입니다.**  
+> 시작점 `ch2-14-start` → **지금 여기 `ch2-14-done`** → 다음 강 시작점 `ch2-15-start`
 
-## 13강 · [실습] 코드리뷰 → 수정까지 완료하는 Skill 만들기
+## 14강 · Hooks — 바닥을 올리는 안전장치
 
-번들 `/code-review`는 **잘 찾는다**. 문제는 12건 중 뭐가 머지 블로커인지 정해주지 않는다는 것. 판정하는 스킬을 직접 만든다.
+게이트를 **자동·무조건** 실행시킨다. "테스트 돌려"라고 안 했는데 통과가 보장된다.
 
 **배우는 것**
 
-- 심각도 정의 + 제외 규칙 → 리포트가 Nit 0건으로 줄어든다
-- `` !`grep` ``·`` !`pytest` ``를 본문에 박아 **결정적 게이트 실행 결과**를 근거로 쓴다
-- 수정 라우팅: 기계가 판정한 형식 위반만 자동 수정, 판단이 필요한 건 사람 큐로
-- 동명 프로젝트 스킬이 번들 스킬을 덮어쓴다
+- **exit 2만 차단**한다. exit 1은 비차단 — 실측으로 확인
+- PostToolUse: 편집마다 포맷 / PreToolUse: 위험 명령 차단 / **Stop: 테스트 통과까지 턴 종료 차단**
+- Stop 훅 명령 두 곳이 성패를 가른다 — `2>&1`(실패 내용을 stderr로 보여야 고친다) · `cd "$CLAUDE_PROJECT_DIR"`(훅은 모델 셸의 cwd를 물려받는다)
+- 게이밍 방어: 테스트를 고쳐 초록불 만드는 우회는 `Edit(tests/**)` deny로 봉인
+- 단일 훅은 뚫린다(Bash `rm`만 보면 `os.remove`로 우회) — **벽이 아니라 층**
 
 **이 브랜치에 들어온 것**
 
-- `.claude/skills/code-review/SKILL.md`
-- `.claude/skills/code-review/checklist.md`
-- `.claude/settings.json` allow에 동적 주입 명령 3종(`git diff`·`grep`·`python -m pytest`)
+- `.claude/settings.json` hooks 3종(PostToolUse · PreToolUse · Stop) + deny `Edit(tests/**)`
 
-> 리뷰 대상 나쁜 PR 3종(가드레일 우회 캐시 · 범위 확대 · bare except)은 **`ch2-13-pr`** 브랜치에 있다.
-> `git checkout ch2-13-pr && git diff HEAD~1` — 비교 기준은 반드시 `HEAD~1`.
+> 연습용 버그는 **`ch2-14-buggy`** — `tax_credit`에 한도 미적용(`1 failed, 10 passed`).
+> 커밋 메시지는 `perf: tax_credit 한도 계산 단순화`로 성능 개선 PR처럼 보이게 해뒀다.
 
 **확인해 보기**
 
 ```bash
-grep -rEn "except\s*:" app/ || echo "OK: bare except 없음"
 python -m pytest -q        # 31 passed
+# 훅 동작 확인 전 `pip install black pytest`
 ```
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
