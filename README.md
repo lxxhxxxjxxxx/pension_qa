@@ -1,3 +1,31 @@
+> 📚 **강의 스냅샷 — 03강을 마친 상태입니다.**  
+> 시작점 `ch1-03-start` → **지금 여기 `ch1-03-done`** → 다음 강 시작점 `ch1-04-start`
+
+## 03강 · 문서 하네스화 (rules · @import)
+
+길어지는 CLAUDE.md를 경로 스코프 규칙과 import로 쪼갠다.
+
+**배우는 것**
+
+- `.claude/rules/`의 `paths:` 프론트매터 = 그 파일을 읽을 때만 로드 = **진짜 컨텍스트 절약**
+- `@import`는 절감이 아니다 — 전부 펼쳐져 로드된다. 정리·중복 제거용
+- 파일을 옮기거나 이름을 바꾸면 `paths`가 어긋나 규칙이 **에러 없이 죽는다**
+
+**이 브랜치에 들어온 것**
+
+- `.claude/rules/guardrails.md` — `app/guardrails.py`에만 걸리는 경로 스코프 규칙
+- `CLAUDE.md` 상단 `@README.md` 한 줄
+
+**확인해 보기**
+
+```bash
+git diff ch1-03-start..ch1-03-done --stat
+python -m pytest -q        # 11 passed
+```
+
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+<!-- /강의안내 -->
+
 # pension_qa — 연금 안내 Q&A 에이전트
 
 사용자의 연금(연금저축·IRP·연금소득세) 질문에 **사내 연금 가이드 문서를 검색(RAG)** 해서 근거와 함께 답하는 작은 LLM 프로덕트.
