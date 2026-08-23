@@ -6,8 +6,7 @@
       "Bash(rm -rf *)",
       "Bash(curl *)",
       "Bash(wget *)",
-      "WebFetch",
-      "Edit(tests/**)"
+      "WebFetch"
     ],
     "ask": [
       "Bash(git push *)"

@@ -94,3 +94,42 @@ def test_input_masking_keeps_retrieval():
     raw_docs = [d.name for d in retriever.search(q)]
     masked_docs = [d.name for d in retriever.search(guardrails.mask_emails(q))]
     assert raw_docs == masked_docs
+
+
+def test_output_leak_smoke():  # ⚠️ assert 없음 — 나쁜 테스트 예시(장면 2)
+    guardrails.check_output_leak("연금저축 세액공제 한도는 연 900만 원입니다")
+    guardrails.check_output_leak("고객 주민번호는 900101-1234567 입니다")
+
+
+# ── 15강: mutation testing이 가리킨 빈틈만 보강 ────────────────────────────
+# survived mutant = 약한 테스트의 정확한 위치. 막연히 "테스트 더"가 아니라
+# 살아남은 mutant가 지목한 곳(출력 유출 판정·차단 사유 문자열)만 메운다.
+
+
+def test_output_leak_blocks_resident_number():
+    result = guardrails.check_output_leak("고객 주민번호는 900101-1234567 입니다")
+    assert result.ok is False
+    assert result.reason  # 차단 시 이유 문자열 반환(.claude/rules/guardrails.md)
+
+
+def test_output_leak_blocks_account_number():
+    result = guardrails.check_output_leak("환급 계좌는 110-1234-567890 입니다")
+    assert result.ok is False
+    assert result.reason
+
+
+def test_output_leak_allows_clean_answer():
+    result = guardrails.check_output_leak("연금저축 세액공제 한도는 연 900만 원입니다")
+    assert result.ok is True
+
+
+def test_output_leak_empty_answer_passes():
+    assert guardrails.check_output_leak("").ok is True
+
+
+def test_pii_block_returns_reason():
+    assert guardrails.check_input_pii("내 번호는 900101-1234567 입니다").reason
+
+
+def test_scope_block_returns_reason():
+    assert guardrails.check_input_scope("오늘 점심 뭐 먹지?").reason
