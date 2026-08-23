@@ -15,7 +15,7 @@ RATE_HIGH = Decimal("0.132")            # 기준선 초과 공제율
 
 def tax_credit(annual_payment: Decimal, gross_salary: Decimal) -> Decimal:
     """연금계좌 납입액 세액공제액(원 단위 절사)."""
-    base = min(annual_payment, CREDIT_LIMIT)
+    base = annual_payment
     rate = RATE_LOW if gross_salary <= SALARY_THRESHOLD else RATE_HIGH
     return (base * rate).quantize(Decimal("1"), rounding=ROUND_DOWN)
 
