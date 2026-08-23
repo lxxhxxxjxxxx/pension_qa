@@ -1,3 +1,32 @@
+> 📚 **강의 스냅샷 — 05강을 마친 상태입니다.**  
+> 시작점 `ch1-05-start` → **지금 여기 `ch1-05-done`** → 다음 강 시작점 `ch1-06-start`
+
+## 05강 · 암묵 제약 명시화 (settings · permissions)
+
+02강의 "CLAUDE.md는 못 막는다"를 `permissions.deny`로 해결한다. **부탁은 확률, 게이트는 결정.**
+
+**배우는 것**
+
+- deny → ask → allow 순서, deny-first. 네트워크는 `curl` 하나가 아니라 나가는 도구를 목록으로 통째 deny
+- allow(`pytest`)는 피로 관리 — 흔한 안전 작업을 뚫어놔야 무지성 승인·bypass 유혹이 안 생긴다
+- `.git` 같은 protected path는 allow로도 안 풀린다
+- 한계: deny는 빌트인 도구엔 먹지만 **임의 스크립트가 직접 열면 못 막는다** → 14강 Hooks · 17강 샌드박스와 겹쳐 쌓는다
+
+**이 브랜치에 들어온 것**
+
+- `.claude/settings.json` — deny/ask/allow 게이트
+- `secrets/key.env` — 데모용 **가짜** 키
+
+**확인해 보기**
+
+```bash
+git diff ch1-05-start..ch1-05-done --stat
+python -m pytest -q        # 11 passed
+```
+
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+<!-- /강의안내 -->
+
 # pension_qa — 연금 안내 Q&A 에이전트
 
 사용자의 연금(연금저축·IRP·연금소득세) 질문에 **사내 연금 가이드 문서를 검색(RAG)** 해서 근거와 함께 답하는 작은 LLM 프로덕트.
