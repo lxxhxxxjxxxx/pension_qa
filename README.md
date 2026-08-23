@@ -1,24 +1,30 @@
-> 📚 **강의 스냅샷 — 12강을 마친 상태입니다.**  
-> 시작점 `ch2-12-start` → **지금 여기 `ch2-12-done`** → **13강도 이 브랜치에서 시작**
+> 📚 **강의 스냅샷 — 13강을 마친 상태입니다.**  
+> 시작점 `ch2-12-done` → **지금 여기 `ch2-13-done`** → 다음 강 시작점 `ch2-14-start`
 
-## 12강 · Skills 기본
+## 13강 · [실습] 코드리뷰 → 수정까지 완료하는 Skill 만들기
 
-반복 작업을 Skill로 표준화한다. **게이트를 만드는 첫 도구.**
+번들 `/code-review`는 **잘 찾는다**. 문제는 12건 중 뭐가 머지 블로커인지 정해주지 않는다는 것. 판정하는 스킬을 직접 만든다.
 
 **배우는 것**
 
-- CLAUDE.md는 항상 로드, Skill은 쓸 때만 on-demand
-- 본문의 `` !`cmd` `` = 동적 컨텍스트 주입 — 추측이 아니라 실제 실행 결과가 프롬프트에 들어간다
-- 두 호출: 자동(description 매칭 — **모델 판단이라 확률적**) · 직접(`/이름`)
-- description이 자동 호출을 가른다. 같은 이름이면 개인 스코프가 프로젝트를 이긴다
+- 심각도 정의 + 제외 규칙 → 리포트가 Nit 0건으로 줄어든다
+- `` !`grep` ``·`` !`pytest` ``를 본문에 박아 **결정적 게이트 실행 결과**를 근거로 쓴다
+- 수정 라우팅: 기계가 판정한 형식 위반만 자동 수정, 판단이 필요한 건 사람 큐로
+- 동명 프로젝트 스킬이 번들 스킬을 덮어쓴다
 
 **이 브랜치에 들어온 것**
 
-`summarize-changes`는 **개인 스코프**(`~/.claude/skills/`)에 만든다 — 레포에 남지 않는다. 프로젝트 스코프 스킬의 실물은 13강(`ch2-13-done`)에서 본다.
+- `.claude/skills/code-review/SKILL.md`
+- `.claude/skills/code-review/checklist.md`
+- `.claude/settings.json` allow에 동적 주입 명령 3종(`git diff`·`grep`·`python -m pytest`)
+
+> 리뷰 대상 나쁜 PR 3종(가드레일 우회 캐시 · 범위 확대 · bare except)은 **`ch2-13-pr`** 브랜치에 있다.
+> `git checkout ch2-13-pr && git diff HEAD~1` — 비교 기준은 반드시 `HEAD~1`.
 
 **확인해 보기**
 
 ```bash
+grep -rEn "except\s*:" app/ || echo "OK: bare except 없음"
 python -m pytest -q        # 31 passed
 ```
 
