@@ -1,34 +1,26 @@
-> 📚 **강의 스냅샷 — 15강을 마친 상태입니다.**  
-> 시작점 `ch2-15-start` → **지금 여기 `ch2-15-done`**
+> 📚 **강의 스냅샷 — 16강을 마친 상태입니다.**  
+> 시작점 `ch2-16-start` → **지금 여기 `ch2-16-done`** → 다음 강 시작점 `ch3-17-start`
 
-## 15강 · 테스트 품질 추적 — mutation score
+## 16강 · [파이널] 버그 심긴 PR에서 문제 자동 적발
 
-14강이 보장한 "테스트 통과"가 **진짜인지** 검증한다. 라인 커버리지 100%인데 검증은 0일 수 있다.
+Ch2 전체(Skills·Hooks·게이트·mutation)를 합쳐, 버그 3종(fail-open 회귀·가짜 import·sources 누락)이 심긴 PR을 네 겹으로 자동 적발한다. 게이트가 못 잡는 판단 버그 1종은 사람 큐로 보낸다.
 
 **배우는 것**
 
-- assert 없는 테스트도 커버리지는 100%를 만든다 — "실행됐나 ≠ 검증됐나"
-- mutation testing: 코드에 작은 버그를 심고 테스트가 잡나 본다. survived = **약한 테스트의 정확한 위치**
-- score를 결정적 게이트로(임계 80%). 느리니 핵심 모듈만·CI 주기로
-- equivalent mutant 때문에 100%는 원래 불가 — 억지로 죽이면 문자열을 베끼는 **과적합 테스트**가 된다
+- 한 PR을 스킬(`/code-review`)·reviewer 서브에이전트·Stop 훅(pytest)·mutation 네 겹이 각각 어디서 잡는지
+- 근거 문서에 심긴 판단 버그(세액공제 한도 700만)는 네 겹 전부 통과한다 — `ch2-16-buggy`(`38 passed`)
+- Ch2 게이트 체크리스트 — 무엇이 결정적으로 막히고 무엇이 사람 몫인지
 
 **이 브랜치에 들어온 것**
 
-- `setup.cfg` — mutmut `source_paths` + pytest `norecursedirs = mutants`
-- `tests/test_guardrails.py` 보강 — 출력 유출 판정·차단 사유 검증(mutation 44/64 → **53/64, 82.8%**)
-- `docs/adr/0004-mutation-gate.md` — 임계 80% 결정
-- 14강 `Edit(tests/**)` deny 해제 — 테스트를 늘리는 게 이 강의 작업이라서
-
-> ⚠️ `setup.cfg`의 `norecursedirs = mutants`가 없으면 `mutmut run` 뒤 평범한 `pytest`가 수집 에러로 죽고,
-> **14강 Stop 훅이 영구 실패**한다. 이 브랜치는 그걸 넣은 상태다.
+- 코드는 `ch2-16-start`(= `ch2-15-done`)와 동일. 촬영에서 나오는 fail-closed 테스트 보강은 촬영 뒤 이 브랜치에 커밋으로 얹는다(fast-forward).
 
 **확인해 보기**
 
 ```bash
-pip install mutmut coverage
-mutmut run "app.guardrails*"
-mutmut results | grep survived   # 11개(전부 equivalent·문자열 변형)
-python -m pytest -q        # 38 passed
+python -m pytest -q                    # 38 passed
+bash harness_check.sh                  # PASS 6/6
+git diff ch2-16-start..ch2-16-buggy    # 판단 버그 D — 근거 문서 한 곳
 ```
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
