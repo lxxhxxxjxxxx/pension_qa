@@ -1,25 +1,27 @@
-> 📚 **강의 스냅샷 — 17강을 마친 상태입니다.**  
-> 시작점 `ch3-17-start` → **지금 여기 `ch3-17-done`** → 다음 강 시작점 `ch3-18-start`
+> 📚 **강의 스냅샷 — 18강을 마친 상태입니다.**  
+> 시작점 `ch3-18-start` → **지금 여기 `ch3-18-done`** → 다음 강 시작점 `ch3-19-start`(19강 준비 때 생성)
 
-## 17강 · [안티패턴] 통합 단계 진단 + 샌드박스·MCP 진입
+## 18강 · MCP 서버 설계와 보안
 
-Part 2 시작. 외부를 붙이는 순간 생기는 문제 다섯(스코프·비용·에러·시크릿·인젝션)을 짚고, 첫 안전장치로 샌드박스(OS 격리)를 켠다. 전제는 "외부는 못 믿는다".
+MCP 연결은 기능 추가가 아니라 **신뢰 경계 설정**. 읽기 전용 문서 서버 하나를 `.mcp.json`으로 팀에 공유하고, 승인 게이트·시크릿 격리·조직 통제·감사 로그로 17강의 다섯 문제를 설계로 막는다.
 
 **배우는 것**
 
-- 한 줄 요청("평가액 API를 MCP로 붙여줘")엔 다섯 항목이 없다 — 채워지는 건 하네스가 정해 둔 만큼
-- 권한·모드·샌드박스 세 층 — permissions는 판단 위, 샌드박스는 판단 아래(OS)
-- 샌드박스는 Bash만 격리한다 — MCP 서버·hooks는 호스트에서 돈다(→ 18강)
+- add 하는 순간이 곧 스코프를 정하는 순간 — `--read-only`
+- `.mcp.json` = config-as-code. clone해도 자동 실행되지 않고 첫 진입 때 승인을 묻는다(기본 선택 = 거부 · `claude mcp reset-project-choices`로 되돌림). 단 `claude -p` 비대화형은 묻지 않는다
+- 토큰은 `env`에 `${PENSION_QA_MCP_TOKEN}` 참조만 — 값은 셸에
+- 조직 통제는 `serverCommand`로(이름은 라벨) · deny 우선 · 감사 로그는 PostToolUse `mcp__.*` 훅
 
 **이 브랜치에 들어온 것**
 
-- 없음(레포 무변경). 샌드박스 설정은 gitignore되는 `.claude/settings.local.json`에만 쓴다. 코드는 `ch3-17-start`(= `ch2-16-done`)와 동일.
+- `.mcp.json` — `pension_qa-docs` stdio 서버(`python3 -m pension_qa_docs.server --read-only`, env 참조). **서버 코드는 22강에서 만든다** — 지금 체크아웃하면 `claude mcp list`에 `⏸ Pending approval`, 승인해도 `✘ Failed to connect`가 정상.
 
 **확인해 보기**
 
 ```bash
-python -m pytest -q        # 38 passed
-claude                     # /sandbox → Mode·Overrides·Config 세 탭 (Linux/WSL은 bubblewrap·socat 필요)
+python -m pytest -q                # 38 passed
+claude mcp list                    # pension_qa-docs … ⏸ Pending approval (run `claude` to approve)
+claude mcp get pension_qa-docs     # Environment: PENSION_QA_MCP_TOKEN=${PENSION_QA_MCP_TOKEN}
 ```
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
