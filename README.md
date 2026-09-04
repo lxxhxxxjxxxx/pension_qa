@@ -1,27 +1,27 @@
-> 📚 **강의 스냅샷 — 18강을 마친 상태입니다.**  
-> 시작점 `ch3-18-start` → **지금 여기 `ch3-18-done`** → 다음 강 시작점 `ch3-19-start`(19강 준비 때 생성)
+> 📚 **강의 스냅샷 — 19강을 마친 상태입니다.**  
+> 시작점 `ch3-19-start` → **지금 여기 `ch3-19-done`** → 다음 강 시작점 `ch3-20-start`(20강 준비 때 생성)
 
-## 18강 · MCP 서버 설계와 보안
+## 19강 · [현업 페인포인트] 핫픽스 중 컨텍스트 손실
 
-MCP 연결은 기능 추가가 아니라 **신뢰 경계 설정**. 읽기 전용 문서 서버 하나를 `.mcp.json`으로 팀에 공유하고, 승인 게이트·시크릿 격리·조직 통제·감사 로그로 17강의 다섯 문제를 설계로 막는다.
+급할수록 하네스가 무너진다. 긴급 핫픽스에서 세션이 길어져 자동 compaction이 초반 제약을 버리고, "로드돼 있겠지" 전제가 깨지고, 급하다고 게이트를 건너뛴다. 완화는 휘발하는 대화 대신 안 휘발하는 곳에 남기는 것.
 
 **배우는 것**
 
-- add 하는 순간이 곧 스코프를 정하는 순간 — `--read-only`
-- `.mcp.json` = config-as-code. clone해도 자동 실행되지 않고 첫 진입 때 승인을 묻는다(기본 선택 = 거부 · `claude mcp reset-project-choices`로 되돌림). 단 `claude -p` 비대화형은 묻지 않는다
-- 토큰은 `env`에 `${PENSION_QA_MCP_TOKEN}` 참조만 — 값은 셸에
-- 조직 통제는 `serverCommand`로(이름은 라벨) · deny 우선 · 감사 로그는 PostToolUse `mcp__.*` 훅
+- 대화에만 있던 제약은 compaction 요약에서 빠질 수 있다 — 루트 CLAUDE.md는 재주입되어 살아남는다
+- 완화 5: CLAUDE.md·memory 고정(02·04강) · 수동 `/compact` · `/rewind` 안전지점 · 최소 게이트 1개(14강 Stop 훅) · 결정은 세션 밖(06강 ADR·커밋)
+- 새 도구 0 — 앞에서 쌓은 하네스를 위기 상황에 다시 불러 쓴다
 
 **이 브랜치에 들어온 것**
 
-- `.mcp.json` — `pension_qa-docs` stdio 서버(`python3 -m pension_qa_docs.server --read-only`, env 참조). **서버 코드는 22강에서 만든다** — 지금 체크아웃하면 `claude mcp list`에 `⏸ Pending approval`, 승인해도 `✘ Failed to connect`가 정상.
+- `HOTFIX.md` — 완화 5종을 절차화한 5줄 카드. 코드·테스트는 `ch3-19-start`(= `ch3-18-done`)와 동일.
+- CLAUDE.md엔 이미 가드레일 fail-closed 원칙이 있고(08강), `tests/test_guardrails.py`엔 근거 게이트·출력 유출 fail-closed 테스트가 있다(06·15강) — 19강 최소 게이트가 그대로 성립한다.
 
 **확인해 보기**
 
 ```bash
-python -m pytest -q                # 38 passed
-claude mcp list                    # pension_qa-docs … ⏸ Pending approval (run `claude` to approve)
-claude mcp get pension_qa-docs     # Environment: PENSION_QA_MCP_TOKEN=${PENSION_QA_MCP_TOKEN}
+python -m pytest tests/test_guardrails.py -q    # 최소 게이트 — fail-closed 회귀를 잡는다
+python -m pytest -q                             # 38 passed
+cat HOTFIX.md
 ```
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
