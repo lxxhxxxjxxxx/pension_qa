@@ -1,26 +1,25 @@
-> 📚 **강의 스냅샷 — 16강을 마친 상태입니다.**  
-> 시작점 `ch2-16-start` → **지금 여기 `ch2-16-done`** → 다음 강 시작점 `ch3-17-start`
+> 📚 **강의 스냅샷 — 17강을 마친 상태입니다.**  
+> 시작점 `ch3-17-start` → **지금 여기 `ch3-17-done`** → 다음 강 시작점 `ch3-18-start`
 
-## 16강 · [파이널] 버그 심긴 PR에서 문제 자동 적발
+## 17강 · [안티패턴] 통합 단계 진단 + 샌드박스·MCP 진입
 
-Ch2 전체(Skills·Hooks·게이트·mutation)를 합쳐, 버그 3종(fail-open 회귀·가짜 import·sources 누락)이 심긴 PR을 네 겹으로 자동 적발한다. 게이트가 못 잡는 판단 버그 1종은 사람 큐로 보낸다.
+Part 2 시작. 외부를 붙이는 순간 생기는 문제 다섯(스코프·비용·에러·시크릿·인젝션)을 짚고, 첫 안전장치로 샌드박스(OS 격리)를 켠다. 전제는 "외부는 못 믿는다".
 
 **배우는 것**
 
-- 한 PR을 스킬(`/code-review`)·reviewer 서브에이전트·Stop 훅(pytest)·mutation 네 겹이 각각 어디서 잡는지
-- 근거 문서에 심긴 판단 버그(세액공제 한도 700만)는 네 겹 전부 통과한다 — `ch2-16-buggy`(`38 passed`)
-- Ch2 게이트 체크리스트 — 무엇이 결정적으로 막히고 무엇이 사람 몫인지
+- 한 줄 요청("평가액 API를 MCP로 붙여줘")엔 다섯 항목이 없다 — 채워지는 건 하네스가 정해 둔 만큼
+- 권한·모드·샌드박스 세 층 — permissions는 판단 위, 샌드박스는 판단 아래(OS)
+- 샌드박스는 Bash만 격리한다 — MCP 서버·hooks는 호스트에서 돈다(→ 18강)
 
 **이 브랜치에 들어온 것**
 
-- 코드는 `ch2-16-start`(= `ch2-15-done`)와 동일. 촬영에서 나오는 fail-closed 테스트 보강은 촬영 뒤 이 브랜치에 커밋으로 얹는다(fast-forward).
+- 없음(레포 무변경). 샌드박스 설정은 gitignore되는 `.claude/settings.local.json`에만 쓴다. 코드는 `ch3-17-start`(= `ch2-16-done`)와 동일.
 
 **확인해 보기**
 
 ```bash
-python -m pytest -q                    # 38 passed
-bash harness_check.sh                  # PASS 6/6
-git diff ch2-16-start..ch2-16-buggy    # 판단 버그 D — 근거 문서 한 곳
+python -m pytest -q        # 38 passed
+claude                     # /sandbox → Mode·Overrides·Config 세 탭 (Linux/WSL은 bubblewrap·socat 필요)
 ```
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
