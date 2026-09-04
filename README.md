@@ -31,7 +31,9 @@ git diff ch1-05-start..ch1-05-done --stat    # 05강이 뭘 채웠는지
 | 13 [실습] 코드리뷰 Skill | `ch2-12-done` | `ch2-13-done` | `.claude/skills/code-review/` | 31 |
 | 14 Hooks 안전장치 | `ch2-14-start` | `ch2-14-done` | settings.json hooks 3종 + deny | 31 |
 | 15 테스트 품질 · mutation | `ch2-15-start` | `ch2-15-done` | `setup.cfg` · 테스트 보강 · ADR 0004 | 38 |
-| 16 [파이널] 버그 PR 자동 적발 | `ch2-16-start` | `ch2-16-done`(촬영 후) | 버그 PR을 4겹으로 적발 · fail-closed 테스트 보강 | 38 |
+| 16 [파이널] 버그 PR 자동 적발 | `ch2-16-start` | `ch2-16-done` | 버그 PR을 4겹으로 적발(촬영 후 fail-closed 테스트 보강 커밋 예정) | 38 |
+| 17 [안티패턴] 통합 단계 진단 · 샌드박스 | `ch3-17-start` | `ch3-17-done` | — 개념·시연강(샌드박스는 `settings.local.json`) | 38 |
+| 18 MCP 서버 설계와 보안 | `ch3-18-start` | `ch3-18-done` | `.mcp.json` 읽기 전용 문서 서버(서버 코드는 22강) | 38 |
 
 > 09·10·13강은 시작점 브랜치 이름이 촬영용으로 먼저 쓰이고 있어서, 표의 직전 끝점을 그대로 쓰면 됩니다.
 
