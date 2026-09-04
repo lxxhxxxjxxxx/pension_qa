@@ -1,27 +1,33 @@
-> 📚 **강의 스냅샷 — 19강을 마친 상태입니다.**  
-> 시작점 `ch3-19-start` → **지금 여기 `ch3-19-done`** → 다음 강 시작점 `ch3-20-start`(20강 준비 때 생성)
+> 📚 **강의 스냅샷 — 20강을 마친 상태입니다.**  
+> 시작점 `ch3-20-start` → **지금 여기 `ch3-20-done`** → 다음 강 시작점 `ch3-21-start`(21강 준비 때 생성)
 
-## 19강 · [현업 페인포인트] 핫픽스 중 컨텍스트 손실
+## 20강 · 외부 호출 신뢰성 5요소
 
-급할수록 하네스가 무너진다. 긴급 핫픽스에서 세션이 길어져 자동 compaction이 초반 제약을 버리고, "로드돼 있겠지" 전제가 깨지고, 급하다고 게이트를 건너뛴다. 완화는 휘발하는 대화 대신 안 휘발하는 곳에 남기는 것.
+외부는 항상 실패한다. 견디게 만드는 다섯 — 타임아웃 · 재시도(분류·상한) · 멱등성 · 폴백 · 관측 — 를 우리 봇의 가장 크고 비싼 외부 의존인 LLM 호출에 입히고, 상한을 모델이 아니라 설정·훅으로 강제한다.
 
 **배우는 것**
 
-- 대화에만 있던 제약은 compaction 요약에서 빠질 수 있다 — 루트 CLAUDE.md는 재주입되어 살아남는다
-- 완화 5: CLAUDE.md·memory 고정(02·04강) · 수동 `/compact` · `/rewind` 안전지점 · 최소 게이트 1개(14강 Stop 훅) · 결정은 세션 밖(06강 ADR·커밋)
-- 새 도구 0 — 앞에서 쌓은 하네스를 위기 상황에 다시 불러 쓴다
+- `llm.py`의 폴백 한 줄은 반쪽 신뢰성 — 타임아웃·재시도·관측이 없어 하루에 몇 번 실패하는지 아무도 몰랐다
+- 재시도는 분류해서(429·5xx·타임아웃만) 상한 안에서 — 상한이 곧 비용 캡. 401·404는 즉시 폴백
+- `MCP_TIMEOUT`(연결/시작) vs `MCP_TOOL_TIMEOUT`(호출 응답)은 별개 노브 — 둘 다 `settings.json` env에 고정
+- 신뢰성은 모델이 기억하는 게 아니라 시스템이 강제하는 것 — PreToolUse `mcp__.*` 훅이 정책 없는 외부 호출을 exit 2로 차단
 
 **이 브랜치에 들어온 것**
 
-- `HOTFIX.md` — 완화 5종을 절차화한 5줄 카드. 코드·테스트는 `ch3-19-start`(= `ch3-18-done`)와 동일.
-- CLAUDE.md엔 이미 가드레일 fail-closed 원칙이 있고(08강), `tests/test_guardrails.py`엔 근거 게이트·출력 유출 fail-closed 테스트가 있다(06·15강) — 19강 최소 게이트가 그대로 성립한다.
+- `app/llm.py` — 타임아웃 명시(`LLM_TIMEOUT_S`) · 분류 재시도(`RETRYABLE`) · 상한(`LLM_MAX_RETRIES`) · `Retry-After` 존중 · 지수 백오프+지터 · 모든 갈림길 로그 · 기존 폴백 유지
+- `tests/test_llm.py` — 8건(타임아웃 명시 · 재시도 후 성공 · 타임아웃 재시도 · 401 즉시 폴백 · 상한=비용 캡 · 429 Retry-After · 폴백 로그 · stub)
+- `.claude/settings.json` — `env: MCP_TIMEOUT=3000 · MCP_TOOL_TIMEOUT=10000` + PreToolUse `mcp__.*` → `.claude/hooks/guard-external.sh`
+- `.claude/hooks/guard-external.sh` — 타임아웃 정책 없으면 exit 2(stderr가 Claude에 피드백)
+- `docs/adr/0005-external-call-reliability.md` — 정책 결정 기록
 
 **확인해 보기**
 
 ```bash
-python -m pytest tests/test_guardrails.py -q    # 최소 게이트 — fail-closed 회귀를 잡는다
-python -m pytest -q                             # 38 passed
-cat HOTFIX.md
+git diff ch3-20-start..ch3-20-done --stat        # 무엇이 들어왔나
+python -m pytest tests/test_llm.py -q            # 8 passed
+python -m pytest -q                              # 46 passed
+env -i bash .claude/hooks/guard-external.sh; echo $?                              # 2 (정책 없음 → 차단)
+MCP_TIMEOUT=3000 MCP_TOOL_TIMEOUT=10000 bash .claude/hooks/guard-external.sh; echo $?   # 0
 ```
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.

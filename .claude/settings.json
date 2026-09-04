@@ -1,4 +1,8 @@
 {
+  "env": {
+    "MCP_TIMEOUT": "3000",
+    "MCP_TOOL_TIMEOUT": "10000"
+  },
   "permissions": {
     "deny": [
       "Read(./secrets/**)",
@@ -38,6 +42,15 @@
             "type": "command",
             "if": "Bash(rm *)",
             "command": "echo 'rm은 훅으로 차단(데모)' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-external.sh"
           }
         ]
       }
