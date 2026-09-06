@@ -6,3 +6,6 @@ __pycache__/
 # mutation testing 산출물(15강)
 mutants/
 .coverage
+
+# 21강 Stop 게이트 세션 상태
+.claude/.gate/

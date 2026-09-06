@@ -18,7 +18,10 @@ def test_scope_allows_pension_question():
 
 
 def test_mask_emails_partial():
-    assert guardrails.mask_emails("문의는 hong@example.com 으로") == "문의는 h***@e***.com 으로"
+    assert (
+        guardrails.mask_emails("문의는 hong@example.com 으로")
+        == "문의는 h***@e***.com 으로"
+    )
 
 
 def test_mask_emails_no_email_unchanged():
@@ -56,7 +59,10 @@ def test_evidence_high_coverage_is_ok():
 
 
 def test_mask_emails_multiple():
-    assert guardrails.mask_emails("a@x.com 또는 b@y.com") == "a***@x***.com 또는 b***@y***.com"
+    assert (
+        guardrails.mask_emails("a@x.com 또는 b@y.com")
+        == "a***@x***.com 또는 b***@y***.com"
+    )
 
 
 def test_mask_emails_multi_dot_domain():
@@ -133,3 +139,24 @@ def test_pii_block_returns_reason():
 
 def test_scope_block_returns_reason():
     assert guardrails.check_input_scope("오늘 점심 뭐 먹지?").reason
+
+
+# 21강 — 출력 가드레일: 전문가 확인 권고 문구가 없으면 차단(fail-closed)
+
+
+def test_output_disclaimer_blocks_when_missing():
+    r = guardrails.check_output_disclaimer("연금저축 세액공제 한도는 연 900만원입니다.")
+    assert r.ok is False
+
+
+def test_output_disclaimer_allows_when_present():
+    r = guardrails.check_output_disclaimer(
+        "연금저축 세액공제 한도는 연 900만원입니다. 정확한 적용은 전문가와 상담하세요."
+    )
+    assert r.ok is True
+
+
+def test_output_disclaimer_block_returns_reason():
+    r = guardrails.check_output_disclaimer("IRP는 55세 이후 수령할 수 있습니다.")
+    assert r.ok is False
+    assert r.reason
