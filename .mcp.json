@@ -3,14 +3,8 @@
     "pension_qa-docs": {
       "type": "stdio",
       "command": "python3",
-      "args": [
-        "-m",
-        "pension_qa_docs.server",
-        "--read-only"
-      ],
-      "env": {
-        "PENSION_QA_MCP_TOKEN": "${PENSION_QA_MCP_TOKEN}"
-      }
+      "args": ["-m", "pension_qa_docs.server", "--read-only"],
+      "env": { "PENSION_QA_MCP_TOKEN": "${PENSION_QA_MCP_TOKEN}" }
     }
   }
 }

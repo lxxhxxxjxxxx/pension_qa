@@ -1,3 +1,39 @@
+> 📚 **강의 스냅샷 — 22강을 마친 상태입니다.**  
+> 시작점 `ch3-22-start`(= `ch3-21-done`) → **지금 여기 `ch3-22-done`** → 다음 강 시작점 `ch3-23-start`(23강 준비 때 생성)
+
+## 22강 · [실습] MCP 직접 연결 + 에러 처리
+
+연결은 `claude mcp add` 한 줄이다. 어려운 건 그 다음 — 서버가 죽고 토큰이 만료되고 타임아웃이 날 때 우리 에이전트가 어떻게 행동하느냐. 18강(설계)과 20강(신뢰성)을 실제 연결 위에서 한 바퀴 돈다.
+
+**배우는 것**
+
+- 첫 연결은 읽기 전용 — 플래그가 아니라 **쓰기 도구의 부재**로(18강 스코프). `pension_qa_docs/server.py`는 `list_docs`·`read_doc`만 노출
+- 실패 5종을 손으로 재현: 틀린 URL `✘ Failed to connect` · `--slow`+`MCP_TIMEOUT` startup 타임아웃 · 401(재시도 금지) · 404 감각(서버는 살아있음) · 스코프 불일치(`✔ Connected`인데 도구가 늘어남)
+- 증상 → 분류 → 원인: `claude mcp list` 상태표 → `/mcp` → `claude --debug "api,mcp"` + stdio 직접 실행. 절차를 `TROUBLESHOOTING.md`로 커밋
+- 20강 5요소를 MCP 호출에 (`app/mcp_client.py`) · 상한은 설정·훅으로 강제 — PreToolUse `mcp__.*` 훅(`guard-mcp.sh`)이 쓰기성 MCP 호출을 exit 2로 차단
+
+**이 브랜치에 들어온 것**
+
+- `pension_qa_docs/server.py` — mcp 2.x MCPServer(1.x FastMCP 호환) 미니 서버, `--slow`/`--with-write` 실습 스위치
+- `TROUBLESHOOTING.md` — 진단 플레이북(증상→분류→원인, 상태표×1차조치)
+- `.mcp.json` — `pension_qa-docs` 읽기전용(20강이 놓은 config를 실물 서버로) · `.claude/hooks/guard-mcp.sh` + settings `mcp__.*`(20강 `guard-external.sh`와 함께)
+- `app/mcp_client.py` — MCP 호출 신뢰성 래퍼(타임아웃·분류 재시도·상한·폴백·로그) + 테스트
+- `docs/adr/0007-mcp-connection-and-error-handling.md`
+
+**확인해 보기**
+
+```bash
+pip install "mcp>=2,<3"                               # 서버 SDK (촬영 실측 mcp 2.1.1)
+python3 -m pension_qa_docs.server                     # Claude 없이 서버 자체 기동(진단 치트키)
+claude mcp add pension_qa-docs -- python3 -m pension_qa_docs.server
+claude mcp list                                       # pension_qa-docs ... ✔ Connected
+python3 -m pytest -q                                  # 61 passed (mcp 없으면 서버 테스트 skip)
+echo '{"tool_name":"mcp__pension_qa-docs__write_doc"}' | bash .claude/hooks/guard-mcp.sh; echo $?   # 2 (쓰기 차단)
+```
+
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+<!-- /강의안내 -->
+
 > 📚 **강의 스냅샷 — 21강을 마친 상태입니다.**  
 > 시작점 `ch3-21-start` → 끊긴 상태 `ch3-21-interrupted` → **지금 여기 `ch3-21-done`** → 다음 강 시작점 `ch3-22-start`(22강 준비 때 생성)
 
