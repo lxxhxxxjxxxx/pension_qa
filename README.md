@@ -1,3 +1,39 @@
+> 📚 **강의 스냅샷 — 21강을 마친 상태입니다.**  
+> 시작점 `ch3-21-start` → 끊긴 상태 `ch3-21-interrupted` → **지금 여기 `ch3-21-done`** → 다음 강 시작점 `ch3-22-start`(22강 준비 때 생성)
+
+## 21강 · 장기 자율 작업의 6장치
+
+사람이 매 턴을 보지 않는 자율 실행은 폭주·표류·유실로 무너진다. 여섯 장치를 전부 레포의 파일·설정으로 두고, 밤에 끊긴 자율 작업을 새 세션이 로그만 읽고 이어가게 했다.
+
+**배우는 것**
+
+- 성공 기준은 기계가 판정한다 — `docs/autonomy/작업로그.md`의 `성공기준` 줄 = `python3 -m pytest -q` 초록. `/goal`은 작은 모델이 대화를 보고 판정하므로 여기선 쓰지 않는다
+- 14강 Stop 훅에 연속 차단 상한(`GATE_MAX_BLOCKS=3`)을 얹었다 — 영영 못 맞추는 테스트면 막지 않고 사람에게 넘긴다(HITL)
+- `--dangerously-skip-permissions`는 컨테이너 안에서만 — `scripts/autorun.sh`가 밖에서는 거부하고 allowlist로 좁혀 돈다
+- 격리는 범위, 상한은 양 — `--max-turns` · `--max-budget-usd` · `MAX_THINKING_TOKENS`
+- 상태는 대화가 아니라 로그와 커밋에 — 세션 전사가 없어도 새 세션이 이어간다
+
+**이 브랜치에 들어온 것**
+
+- `.claude/hooks/gate-pytest.sh` + `.claude/settings.json` Stop → 스크립트 — 상한 · 로그 흔적 · HITL 인계
+- `scripts/autorun.sh` · `scripts/autorun_render.py` — 자율 실행 한 줄 + 턴·도구·게이트를 보이는 관측 렌더러
+- `docs/autonomy/작업로그.md` — 작업 · 성공기준 · 진행 · HITL 경계 · 이력(자율 실행이 남긴 줄 그대로)
+- `app/guardrails.py` `check_output_disclaimer` + `tests/test_guardrails.py` 3건 — **자율 실행이 만든 산출물**(`ch3-21-run1`: 11턴 · 82초 · $0.86, run2·run3도 초록)
+- `docs/adr/0006-autonomous-run-safeguards.md`
+
+**확인해 보기**
+
+```bash
+git diff ch3-21-start..ch3-21-interrupted --stat   # 6장치 세팅 + red 테스트 = 끊긴 상태
+git diff ch3-21-interrupted..ch3-21-done --stat    # 자율 실행이 만든 것
+python3 -m pytest -q                               # 49 passed
+bash scripts/autorun.sh --dry-run                  # 컨테이너 밖 → allowlist 모드
+echo '{"session_id":"x"}' | bash .claude/hooks/gate-pytest.sh; echo $?   # 초록이면 0
+```
+
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+<!-- /강의안내 -->
+
 > 📚 **강의 스냅샷 — 20강을 마친 상태입니다.**  
 > 시작점 `ch3-20-start` → **지금 여기 `ch3-20-done`** → 다음 강 시작점 `ch3-21-start`(21강 준비 때 생성)
 
