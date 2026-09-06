@@ -36,6 +36,7 @@ git diff ch1-05-start..ch1-05-done --stat    # 05강이 뭘 채웠는지
 | 18 MCP 서버 설계와 보안 | `ch3-18-start` | `ch3-18-done` | `.mcp.json` 읽기 전용 문서 서버(서버 코드는 22강) | 38 |
 | 19 [페인포인트] 핫픽스 컨텍스트 손실 | `ch3-19-start` | `ch3-19-done` | `HOTFIX.md` 5줄 카드(완화 절차화) | 38 |
 | 20 외부 호출 신뢰성 5요소 | `ch3-20-start` | `ch3-20-done` | `llm.py` 하네스(타임아웃·분류 재시도·상한·로그) · `test_llm.py` 8 · settings env + `mcp__.*` 훅 · ADR 0005 | 46 |
+| 21 장기 자율 작업의 6장치 | `ch3-21-start` | `ch3-21-done` | 6장치 세팅(`gate-pytest.sh` 상한·HITL · `autorun.sh` 격리 분기·상한 · `작업로그.md` · ADR 0006) + 자율 실행이 만든 `check_output_disclaimer` · 끊긴 상태 `ch3-21-interrupted` · 실측 `ch3-21-run1~3`·`-cap` | 49 |
 
 > 09·10·13강은 시작점 브랜치 이름이 촬영용으로 먼저 쓰이고 있어서, 표의 직전 끝점을 그대로 쓰면 됩니다.
 
