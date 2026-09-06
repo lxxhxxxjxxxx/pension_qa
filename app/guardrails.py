@@ -2,6 +2,7 @@
 
 ⚠️ 의도적으로 허술함(정규식·키워드 휴리스틱). Ch2에서 결정적 게이트로 강화한다.
 """
+
 from __future__ import annotations
 
 import re
@@ -9,12 +10,23 @@ from dataclasses import dataclass
 
 # 주민등록번호 / 계좌·카드번호 비슷한 패턴
 _PII_PATTERNS = [
-    re.compile(r"\d{6}[- ]?\d{7}"),          # 주민등록번호
+    re.compile(r"\d{6}[- ]?\d{7}"),  # 주민등록번호
     re.compile(r"\d{3,4}[- ]\d{2,6}[- ]\d{3,6}"),  # 계좌/카드
 ]
 
 # 연금 범위 키워드(범위 판정 휴리스틱)
-_SCOPE_KEYWORDS = ["연금", "IRP", "퇴직", "수령", "공제", "납입", "과세", "소득", "해지", "저축"]
+_SCOPE_KEYWORDS = [
+    "연금",
+    "IRP",
+    "퇴직",
+    "수령",
+    "공제",
+    "납입",
+    "과세",
+    "소득",
+    "해지",
+    "저축",
+]
 
 
 @dataclass
@@ -26,7 +38,9 @@ class Check:
 def check_input_pii(text: str) -> Check:
     for pat in _PII_PATTERNS:
         if pat.search(text):
-            return Check(False, "입력에 개인정보(PII)로 보이는 값이 포함되어 차단합니다.")
+            return Check(
+                False, "입력에 개인정보(PII)로 보이는 값이 포함되어 차단합니다."
+            )
     return Check(True)
 
 
@@ -41,6 +55,20 @@ def check_output_leak(answer: str) -> Check:
         if pat.search(answer):
             return Check(False, "출력에 개인정보로 보이는 값이 있어 차단합니다.")
     return Check(True)
+
+
+# 전문가 확인 권고 문구(키워드 휴리스틱 stub — 문구 유무만 본다, 답변 내용은 건드리지 않음)
+_DISCLAIMER_KEYWORDS = ["전문가", "상담"]
+
+
+def check_output_disclaimer(answer: str) -> Check:
+    """연금 안내 답변에 전문가 확인 권고 문구가 없으면 차단(fail-closed).
+
+    빈 답변도 문구가 없는 것이므로 차단한다.
+    """
+    if any(kw in answer for kw in _DISCLAIMER_KEYWORDS):
+        return Check(True)
+    return Check(False, "답변에 전문가 확인 권고 문구가 없어 차단합니다.")
 
 
 # 근거 커버리지 2단 임계(ADR 0002) — 현재 data/ 3개 문서 실측 분포 기준.
