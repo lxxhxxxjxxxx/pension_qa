@@ -1,3 +1,36 @@
+> 📚 **강의 스냅샷 — 25강을 마친 상태입니다.**  
+> 시작점 `ch4-25-start`(= `ch4-24-done`) → **지금 여기 `ch4-25-done`** → 다음 강 시작점 `ch4-26-start`(26강 준비 때 생성)
+
+## 25강 · 리뷰어 에이전트 견고화 + 변경 범위 제어
+
+07·13강의 리뷰어를 운영에서 믿을 수 있게 세우고, AI 변경을 범위 안에 가둔다. **리뷰어는 확률적 — 스펙·포맷·격리·게이트로 감싸 믿게 만들고, 변경은 범위 안에.**
+
+**배우는 것**
+
+- output-style로 리뷰 출력 포맷 고정(🔴/🟡/🟣·file:line·Summary) → severity 파싱해 결정적 게이트(check run은 neutral이라 게이트는 우리가 건다)
+- 컨텍스트 격리(서브에이전트 독립 컨텍스트·`--fork-session`) — 자기 bias 차단
+- surgical: 규칙(checklist)은 유도, 상한은 **`guard-diff-size.sh`가 기계로 강제**(파일 5·라인 300 초과 exit 2)
+- 재견고화 루프: 리뷰어를 뚫어 놓친 패턴을 checklist에 한 줄 추가(뚫리면 규칙이 자란다)
+
+**이 브랜치에 들어온 것**
+
+- `.claude/output-styles/reviewer.md` — 리뷰 출력 포맷 고정
+- `.claude/agents/reviewer.md` — `isolation: worktree` + output-style 연결(07강 리뷰어 강화)
+- `.claude/skills/code-review/checklist.md` — 🔴/🟡/🟣 · surgical · 재견고화 줄 · 아키텍처(import 경계) 체크
+- `.claude/hooks/guard-diff-size.sh` + `tests/test_guard_diff_size.py` — surgical 상한 게이트
+- `docs/adr/0010-reviewer-hardening.md`
+
+**확인해 보기**
+
+```bash
+GUARD_MAX_FILES=0 bash .claude/hooks/guard-diff-size.sh; echo $?   # 2 (상한 초과 차단)
+python3 -m pytest tests/test_guard_diff_size.py -q                 # 3 passed
+python3 -m pytest -q                                               # 75 passed
+```
+
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+<!-- /강의안내 -->
+
 > 📚 **강의 스냅샷 — 24강(Ch4 시작)을 마친 상태입니다.**  
 > 시작점 `ch4-24-start`(= `ch3-23-done`) → **지금 여기 `ch4-24-done`** → 다음 강 시작점 `ch4-25-start`(25강 준비 때 생성)
 
