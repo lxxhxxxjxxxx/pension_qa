@@ -37,6 +37,7 @@ git diff ch1-05-start..ch1-05-done --stat    # 05강이 뭘 채웠는지
 | 19 [페인포인트] 핫픽스 컨텍스트 손실 | `ch3-19-start` | `ch3-19-done` | `HOTFIX.md` 5줄 카드(완화 절차화) | 38 |
 | 20 외부 호출 신뢰성 5요소 | `ch3-20-start` | `ch3-20-done` | `llm.py` 하네스(타임아웃·분류 재시도·상한·로그) · `test_llm.py` 8 · settings env + `mcp__.*` 훅 · ADR 0005 | 46 |
 | 21 장기 자율 작업의 6장치 | `ch3-21-start` | `ch3-21-done` | 6장치 세팅(`gate-pytest.sh` 상한·HITL · `autorun.sh` 격리 분기·상한 · `작업로그.md` · ADR 0006) + 자율 실행이 만든 `check_output_disclaimer` · 끊긴 상태 `ch3-21-interrupted` · 실측 `ch3-21-run1~3`·`-cap` | 49 |
+| 22 [실습] MCP 직접 연결 + 에러 처리 | `ch3-22-start` | `ch3-22-done` | `pension_qa_docs/server.py`(읽기전용 문서 MCP 서버, mcp 2.x) · `app/mcp_client.py`(신뢰성 5요소 래퍼) · `.claude/hooks/guard-mcp.sh`(쓰기 도구 exit 2) · `.mcp.json` · `TROUBLESHOOTING.md` · ADR 0007 | 61 |
 
 > 09·10·13강은 시작점 브랜치 이름이 촬영용으로 먼저 쓰이고 있어서, 표의 직전 끝점을 그대로 쓰면 됩니다.
 
