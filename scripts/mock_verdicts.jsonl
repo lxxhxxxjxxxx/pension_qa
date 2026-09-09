@@ -1,0 +1,3 @@
+{"file":"app/guardrails.py","line":42,"verdict":"survived","evidence":"test","detail":"인젝션 회귀 테스트 실패=가드레일 뚫림"}
+{"file":"log.py","line":88,"verdict":"survived","evidence":"grep","detail":"grep에 마스킹 함수 없음"}
+{"file":"app/retriever.py","line":15,"verdict":"refuted","evidence":null,"detail":"캐시는 요청마다 새로 생성·미공유 → 레이스 경로 없음, 재현 테스트 불가"}

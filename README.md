@@ -1,3 +1,38 @@
+> 📚 **강의 스냅샷 — 26강을 마친 상태입니다.**  
+> 시작점 `ch4-26-start`(= `ch4-25-done`) → **지금 여기 `ch4-26-done`** → 다음 강 시작점 `ch4-27-start`(27강 준비 때 생성)
+
+## 26강 · 적대적 리뷰어 다중화 + 결정적 집계 (+ 크로스 프로바이더)
+
+리뷰어 하나는 확률적이라 놓치거나 자신 있게 틀린다. **렌즈별로 다중화**하고, 그 위에 **사람 주관 0의 집계**를 얹어 확률적 리뷰를 결정적 게이트로 바꾼다.
+
+**배우는 것**
+
+- 다중화: 같은 diff를 렌즈·모델이 다른 리뷰어가 **독립**으로(서로 안 봄=투표 성립). 25강 output-style이 셋을 같은 포맷으로 뱉어 기계가 묶어 센다
+- 적대적 검증: 1표짜리는 인센티브 뒤집은 검증자가 깨본다 — 깨지면 FP 폐기, 못 깨고 기계 증거(grep·test) 남으면 confirm
+- 결정적 집계: ①같은 file:line ≥2표 → confirm ②1표+기계증거 → confirm ③논파·증거없음 → 폐기 / 게이트 confirm된 🔴 Important>0 → 머지 차단. **논파는 표수를 이긴다**(다수결 함정 방지)
+- 리뷰어 3→10개로 늘려도 집계 로직 불변 — 규칙이 스케일. 크로스 프로바이더도 같은 포맷만 지키면 그대로 붙는다
+
+**이 브랜치에 들어온 것**
+
+- `.claude/agents/reviewer-accuracy.md`(opus)·`reviewer-security.md`(sonnet)·`reviewer-perf.md`(haiku) — 렌즈별 리뷰어
+- `scripts/aggregate_reviews.py` + `mock_reviews.jsonl`·`mock_verdicts.jsonl` — 결정적 집계 + 고정 입력(촬영 재현)
+- `tests/test_aggregate_reviews.py`(8) — 규칙1/2/3·논파 우선·결정성·Nit 비차단
+- `docs/adr/0011-adversarial-review-aggregation.md`
+- `harness_check.sh` ④ 교정: '정확히 4개'→'핵심 4역할 존재'(리뷰어 다중화로 6강 불변식이 진화)
+
+**확인해 보기**
+
+```bash
+python3 scripts/aggregate_reviews.py; echo $?   # 표+게이트, confirm된 Important 2건 → exit 1(차단)
+python3 -m pytest tests/test_aggregate_reviews.py -q   # 8 passed
+python3 -m pytest -q                                   # 83 passed
+```
+
+> 크로스 프로바이더(다른 벤더 모델을 리뷰어로 섞기)의 라이브는 강사 환경 시연(레포엔 집계·규칙·테스트만 실물). 같은 출력 포맷만 지키면 이 집계에 그대로 붙는다.
+
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+<!-- /강의안내 -->
+
 > 📚 **강의 스냅샷 — 25강을 마친 상태입니다.**  
 > 시작점 `ch4-25-start`(= `ch4-24-done`) → **지금 여기 `ch4-25-done`** → 다음 강 시작점 `ch4-26-start`(26강 준비 때 생성)
 

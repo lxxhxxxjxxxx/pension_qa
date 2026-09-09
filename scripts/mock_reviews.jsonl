@@ -1,0 +1,5 @@
+{"reviewer":"accuracy","severity":"Important","file":"app/guardrails.py","line":42,"note":"문서 본문을 지시로 읽는 경로"}
+{"reviewer":"security","severity":"Important","file":"app/guardrails.py","line":42,"note":"인젝션 관점, 같은 자리"}
+{"reviewer":"security","severity":"Important","file":"log.py","line":88,"note":"상담 원문 PII 로그 유출(이 PR이 새로 추가한 파일)"}
+{"reviewer":"perf","severity":"Important","file":"app/retriever.py","line":15,"note":"동시 요청 캐시 레이스로 회귀 가능"}
+{"reviewer":"perf","severity":"Nit","file":"app/retriever.py","line":33,"note":"변수명"}
