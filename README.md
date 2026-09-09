@@ -7,14 +7,14 @@
 
 **배우는 것**
 
-- 다중화: 같은 diff를 렌즈·모델이 다른 리뷰어가 **독립**으로(서로 안 봄=투표 성립). 25강 output-style이 셋을 같은 포맷으로 뱉어 기계가 묶어 센다
+- 다중화: 같은 diff를 렌즈·모델이 다른 리뷰어가 **독립**으로(서로 안 봄=투표 성립 — 격리는 컨텍스트 창, worktree 아님). 셋이 같은 포맷(25강 뼈대를 **각 본문에 내장** — output-style은 서브에이전트 비적용)으로 뱉어 기계가 묶어 센다
 - 적대적 검증: 1표짜리는 인센티브 뒤집은 검증자가 깨본다 — 깨지면 FP 폐기, 못 깨고 기계 증거(grep·test) 남으면 confirm
 - 결정적 집계: ①같은 file:line ≥2표 → confirm ②1표+기계증거 → confirm ③논파·증거없음 → 폐기 / 게이트 confirm된 🔴 Important>0 → 머지 차단. **논파는 표수를 이긴다**(다수결 함정 방지)
 - 리뷰어 3→10개로 늘려도 집계 로직 불변 — 규칙이 스케일. 크로스 프로바이더도 같은 포맷만 지키면 그대로 붙는다
 
 **이 브랜치에 들어온 것**
 
-- `.claude/agents/reviewer-accuracy.md`(opus)·`reviewer-security.md`(sonnet)·`reviewer-perf.md`(haiku) — 렌즈별 리뷰어
+- `.claude/agents/reviewer-accuracy.md`(opus)·`reviewer-security.md`(sonnet)·`reviewer-perf.md`(haiku) — 렌즈별 리뷰어(포맷 본문 내장 · worktree 없음)
 - `scripts/aggregate_reviews.py` + `mock_reviews.jsonl`·`mock_verdicts.jsonl` — 결정적 집계 + 고정 입력(촬영 재현)
 - `tests/test_aggregate_reviews.py`(8) — 규칙1/2/3·논파 우선·결정성·Nit 비차단
 - `docs/adr/0011-adversarial-review-aggregation.md`

@@ -11,7 +11,7 @@
 - `mock_verdicts.jsonl` — 1표짜리 발견에 대한 적대적 검증 판정. `{file, line, verdict(survived|refuted), evidence(grep|test|null), detail}`.
 
 가상 PR이 하나 올라온 상황을 가정한다. 좌표 주의:
-- `app/guardrails.py:42` · `app/retriever.py:15/33` — **레포에 실재**하는 파일.
+- `app/guardrails.py:42` · `app/retriever.py:15/33` — **레포에 실재**하는 파일. 단 발견 내용("문서 본문을 지시로 읽는 경로"·"캐시 레이스")은 **가상 PR의 diff 기준**이다 — 현재 42줄은 PII 체크의 `return Check(False, …)`라, 에디터로 열면 인젝션 경로가 아니다.
 - `log.py:88` — **이 가상 PR이 새로 추가한 파일**(레포엔 아직 없음). 그래서 검증은 grep(마스킹 함수 부재)으로 한다.
 
 ## 실행
