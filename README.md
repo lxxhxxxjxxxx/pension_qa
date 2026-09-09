@@ -42,6 +42,7 @@ git diff ch1-05-start..ch1-05-done --stat    # 05강이 뭘 채웠는지
 | 24 [Ch4 시작] 운영 안티패턴 진단 | `ch4-24-start` | `ch4-24-done` | `docs/adr/0009-incident-response.md`(장애대응 ADR) · `docs/runbook/운영진단표.md` · `tests/test_incident_response.py`(재발방지 회귀) · `.claude/settings.json` `env`(OTel) · `hooks/audit-config-change.sh`+`ConfigChange` 훅+테스트 · CLAUDE.md 운영 규칙 | 72 |
 | 25 리뷰어 견고화 + 변경 범위 제어 | `ch4-25-start` | `ch4-25-done` | `.claude/output-styles/reviewer.md` · `agents/reviewer.md`(포맷 본문 내장, worktree 없음) · `code-review/checklist.md` 강화 · CLAUDE.md surgical 규칙 · `hooks/guard-diff-size.sh`+테스트+**settings.json PreToolUse 등록**(상한 exit 2) · ADR 0010 | 75 |
 | 26 적대적 리뷰어 다중화 + 결정적 집계 | `ch4-26-start` | `ch4-26-done` | `agents/reviewer-{accuracy,security,perf}.md`(렌즈별·포맷 본문 내장·worktree 없음) · `scripts/aggregate_reviews.py`+mock(≥2표·1표+기계증거·논파 폐기) · `tests/test_aggregate_reviews.py`(8) · ADR 0011 · harness ④ 진화 | 83 |
+| 27 기술부채 정량추적 + 자동 백로그 + 큐 분리 | `ch4-27-start` | `ch4-27-done` | (이름 선점 2026-09-09 — 코드는 시작점과 동일, 안내 README만. 부채 스캔·백로그 append 훅·`BACKLOG.md`·큐 라우팅은 수정 패스·촬영 뒤 fast-forward) | 83 |
 
 > 09·10·13강은 시작점 브랜치 이름이 촬영용으로 먼저 쓰이고 있어서, 표의 직전 끝점을 그대로 쓰면 됩니다.
 
