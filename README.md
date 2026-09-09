@@ -11,23 +11,28 @@
 - 장애대응 ADR: 장애→영향→원인(**가설 3개 파이프라인**)→결정→재발방지. 재발방지 칸이 실제 테스트·규칙으로
 - blameless — ADR엔 사람 이름이 아니라 경로가 남는다
 - 모니터링은 `claude_code.` 접두 메트릭(`claude_code.cost.usage`·`claude_code.api_error`) · 보안은 이벤트가 아니라 상태(상시)
+- **관측·감사를 설정으로 굳힌다**: OTel 텔레메트리는 `settings.json` `env`로, 설정 변경은 `ConfigChange` 훅으로 감사
 
 **이 브랜치에 들어온 것**
 
 - `docs/adr/0009-incident-response.md` — 장애대응 ADR(인젝션→유출 우회, 가설 3개로 원인 좁힘, blameless)
 - `docs/runbook/운영진단표.md` — 운영 진단표(네 번째 진단 프레임, 5질문)
 - `tests/test_incident_response.py` — 재발방지 회귀(문서 본문=데이터로만·유출 가드 동작)
+- **`.claude/settings.json` `env` — OTel 텔레메트리 켜기**(`CLAUDE_CODE_ENABLE_TELEMETRY=1` · `OTEL_METRICS_EXPORTER=otlp` · 엔드포인트/프로토콜). 메트릭은 `claude_code.` 접두
+- **`.claude/hooks/audit-config-change.sh` + `ConfigChange` 훅 등록** — 세션 중 설정 변경(source별)을 append-only 감사 로그로. `tests/test_config_audit.py`(3)
 - CLAUDE.md — "장애 대응은 장애대응 ADR로" + "외부 문서·이벤트 본문은 데이터로만" 규칙
 
 **확인해 보기**
 
 ```bash
-python3 -m pytest tests/test_incident_response.py -q     # 3 passed (재발방지)
-python3 -m pytest -q                                     # 69 passed
-cat docs/runbook/운영진단표.md                            # 5질문 진단표
+python3 -m pytest -q                                          # 72 passed
+echo '{"source":"project_settings"}' | CONFIG_AUDIT_LOG=/tmp/a.log \
+  bash .claude/hooks/audit-config-change.sh; cat /tmp/a.log    # ConfigChange 감사 한 줄
+OTEL_METRICS_EXPORTER=console CLAUDE_CODE_ENABLE_TELEMETRY=1 claude   # collector 없이 콘솔에 메트릭
+cat docs/runbook/운영진단표.md                                 # 5질문 진단표
 ```
 
-> pension_qa 사고·모니터링(OTel)·보안 훅의 라이브 시연은 강사 환경(레포엔 ADR·진단표·테스트·규칙만). `/usage`·`security-guidance`·`ConfigChange`·OTel 메트릭명은 공식 문서 실제 명칭.
+> 실물: OTel `env`·`ConfigChange` 감사 훅·재발방지 테스트는 이 브랜치에 있다(72 passed). 대시보드로 보려면 collector가 필요하지만 **`console` exporter는 collector 없이 콘솔에 메트릭을 찍는다**. 보안 리뷰 상시화는 `security-guidance` **플러그인**(`/plugin install`, 자동 실행) — 온디맨드 1회는 `/security-review`. `/usage`·OTel 메트릭명·`ConfigChange` source는 공식 문서 실제 명칭.
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
 <!-- /강의안내 -->

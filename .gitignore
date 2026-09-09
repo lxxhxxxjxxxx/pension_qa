@@ -12,3 +12,6 @@ mutants/
 
 # 23강 배포봇 채점 산출물(재현 가능·커밋 불요)
 out/
+
+# ConfigChange 감사 훅 로그(24강)
+.claude/config_audit.log
