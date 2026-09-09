@@ -8,16 +8,17 @@
 **배우는 것**
 
 - output-style로 리뷰 출력 포맷 고정(🔴/🟡/🟣·file:line·Summary) → severity 파싱해 결정적 게이트(check run은 neutral이라 게이트는 우리가 건다)
-- 컨텍스트 격리(서브에이전트 독립 컨텍스트·`--fork-session`) — 자기 bias 차단
-- surgical: 규칙(checklist)은 유도, 상한은 **`guard-diff-size.sh`가 기계로 강제**(파일 5·라인 300 초과 exit 2)
+- 컨텍스트 격리(서브에이전트 독립 컨텍스트·`--fork-session`) — 자기 bias 차단. 격리는 컨텍스트 창이고 worktree가 아니다(리뷰어는 Write가 없고, 서브에이전트 worktree는 main에서 분기해 diff가 안 보인다)
+- surgical: 규칙(CLAUDE.md·checklist)은 유도, 상한은 **`guard-diff-size.sh`가 기계로 강제** — `settings.json` `PreToolUse` `Edit|Write`에 등록, 파일 5·라인 300 초과면 다음 편집 차단(exit 2)
 - 재견고화 루프: 리뷰어를 뚫어 놓친 패턴을 checklist에 한 줄 추가(뚫리면 규칙이 자란다)
 
 **이 브랜치에 들어온 것**
 
 - `.claude/output-styles/reviewer.md` — 리뷰 출력 포맷 고정
-- `.claude/agents/reviewer.md` — `isolation: worktree` + output-style 연결(07강 리뷰어 강화)
+- `.claude/agents/reviewer.md` — 07강 리뷰어 강화. 출력 포맷을 **본문에 직접** 둠(output-style은 서브에이전트에 적용 안 됨) · worktree 없음(diff를 봐야 하므로)
 - `.claude/skills/code-review/checklist.md` — 🔴/🟡/🟣 · surgical · 재견고화 줄 · 아키텍처(import 경계) 체크
-- `.claude/hooks/guard-diff-size.sh` + `tests/test_guard_diff_size.py` — surgical 상한 게이트
+- `.claude/hooks/guard-diff-size.sh` + `tests/test_guard_diff_size.py` + `.claude/settings.json` PreToolUse 등록 — surgical 상한 게이트
+- `CLAUDE.md` — surgical 금지 규칙 한 줄
 - `docs/adr/0010-reviewer-hardening.md`
 
 **확인해 보기**
