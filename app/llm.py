@@ -29,6 +29,7 @@ FALLBACK_PREFIX = "[LLM 오류 fallback]"
 _sleep = time.sleep  # 테스트에서 바꿔 끼운다
 
 
+# FIXME: 폴백 경로 로그가 구조화돼 있지 않다 — 장애 때 추적이 안 된다
 def _make_client():
     import anthropic  # 지연 import — 키 없을 땐 패키지도 필요 없다
 

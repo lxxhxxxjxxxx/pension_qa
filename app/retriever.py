@@ -32,6 +32,7 @@ class Retrieval:
     coverage: float
 
 
+# TODO: 상위 k 기본값 2가 매직넘버 — 모듈 상수로 빼기
 def search(query: str, k: int = 2, docs: list[Doc] | None = None) -> list[Doc]:
     return search_scored(query, k, docs).docs
 
@@ -48,6 +49,7 @@ def search_scored(query: str, k: int = 2, docs: list[Doc] | None = None) -> Retr
     for d in docs:
         overlap = q & set(_tokens(d.text))
         scored.append((len(overlap), overlap, d))
+    # TODO: 문서 토큰을 질의마다 재계산한다 — 캐시 검토(부하 커지면 먼저 아플 자리)
     scored.sort(key=lambda x: x[0], reverse=True)
 
     top = [(overlap, d) for score, overlap, d in scored[:k] if score > 0]

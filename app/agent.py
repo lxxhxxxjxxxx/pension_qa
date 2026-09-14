@@ -31,6 +31,7 @@ def ask(question: str) -> Result:
     if not docs:
         return Result("관련 근거 문서를 찾지 못해 답변하지 않습니다.", blocked=True)
 
+    # TODO: 변수명 names 가 모호 — source_names
     names = [d.name for d in docs]
 
     # 근거 부실 게이트(ADR 0002) — 하드 미달이면 LLM을 부르지 않고 보류한다.

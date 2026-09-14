@@ -6,6 +6,7 @@ import sys
 from .agent import ask
 
 
+# TODO: CLI 진입 경로에 테스트가 없다 — 커버 0%
 def main(argv: list[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
     if not argv:
