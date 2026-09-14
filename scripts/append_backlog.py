@@ -258,6 +258,8 @@ def from_stdin() -> int:
 def main() -> int:
     ap = argparse.ArgumentParser(description="리뷰 산출·지표를 부채 큐로 라우팅해 BACKLOG.md 에 append")
     ap.add_argument("--from-stdin", action="store_true", help="Stop/SubagentStop 훅 입력(JSON)에서")
+    ap.add_argument("--from-report", action="store_true",
+                    help="고정 리뷰 리포트에서 — 훅이 받는 것과 같은 경로를 손으로 한 번(촬영 재현)")
     ap.add_argument("--from-aggregate", action="store_true",
                     help="26강 집계 결과(고정 픽스처)에서 — 게이트 비대상 갈래를 백로그로")
     args = ap.parse_args()
@@ -265,6 +267,14 @@ def main() -> int:
     if args.from_stdin:
         n = from_stdin()
         print(f"백로그 추가 {n}건")
+        return 0
+
+    if args.from_report:
+        text = (Path(__file__).parent / "mock_review_report.md").read_text(encoding="utf-8")
+        items = parse_review_text(text)
+        n = merge_into_backlog(items)
+        print(render(read_backlog()))
+        print(f"\n부채 큐로 {len(items)}건 (신규 {n}건) — 🔴 Important 는 오지 않았다(긴급 큐)")
         return 0
 
     if args.from_aggregate:
