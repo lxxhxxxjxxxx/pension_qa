@@ -82,6 +82,14 @@
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/gate-pytest.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/append-backlog.sh"
+          }
+        ]
       }
     ],
     "ConfigChange": [

@@ -31,6 +31,7 @@
 - 금액 계산에 float를 쓰지 말 것 — 반드시 `Decimal`(`app/pension_calc.py`가 기준).
 - 가드레일을 우회하거나 약화시키지 말 것.
 - **요청 밖을 건드리지 말 것(surgical, 25강)** — 요청에 없는 리팩터·개선·리네이밍 금지, 인접 코드가 거슬려도 그대로(발견은 🟣 Pre-existing으로 기록만). 규칙은 유도일 뿐이라 상한은 `.claude/hooks/guard-diff-size.sh`(PreToolUse Edit|Write, 파일 5·라인 300 초과 시 다음 편집 차단)가 기계로 건다.
+- **🟡 Nit·🟣 Pre-existing 은 이 PR 에서 고치지 말 것(27강)** — 부채 큐로 보낸다. `Stop` 훅이 `BACKLOG.md` 에 자동 append 하고, 저위험·가역·테스트 격리 3조건을 전부 만족하는 것만 자동 상환 대상이다. 급한 것(🔴)만 게이트로 오늘 막는다 — 둘을 섞으면 게이트가 죽는다.
 
 ## 결정 기록
 - 중요한 설계 결정은 docs/adr/ 에 ADR(번호순)로 남긴다.

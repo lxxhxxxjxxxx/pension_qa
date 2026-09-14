@@ -1,3 +1,4 @@
 # LLM 호출용(선택). 없으면 stub로 동작.
 anthropic>=0.40
 mcp>=2,<3   # 22강 문서 MCP 서버(pension_qa_docs) — 없으면 서버 테스트는 skip
+pytest-cov>=5   # 27강 부채 지표(커버리지). 없으면 pytest --cov 가 'unrecognized arguments' 로 죽는다
