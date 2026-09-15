@@ -1,27 +1,34 @@
 > 📚 **강의 스냅샷 — 29강을 마친 상태입니다.**  
-> 시작점 `ch4-29-start`(= `ch4-28-done`) → **지금 여기 `ch4-29-done`** → 다음 강 시작점 `ch4-30-start`(30강 준비 때 생성)
+> 시작점 `ch4-29-start`(= `ch4-28-done`) → 촬영 시작점 `ch4-29-stale`(도구는 있고 결정 전) → **지금 여기 `ch4-29-done`** → 다음 강 시작점 `ch4-30-start`(30강 준비 때 생성)
 
 ## 29강 · 6개월 자가점검 + 내구성 + KPI
 
-28강에서 플러그인으로 묶어 팀에 배포한 하네스도 **시간이 지나면 코드베이스와 어긋난다** — 규칙이 거짓이 되고, 게이트가 형식이 되고, 훅이 왜 있는지 잊힌다.
-하네스를 **정기 자가점검**으로 걷어내고 흡수하며, **내구성**(담당자·시간·모델 변화)을 재고, **KPI**로 하네스가 값을 하는지 숫자로 본다.
+28강에서 플러그인으로 묶어 팀에 배포한 하네스도 **시간이 지나면 코드베이스와 어긋난다**. 이 레포에서 실제로 그랬다 —
+13강에서 넣은 `code-review` 스킬의 `grep -rn "float(" app/` 게이트는 20강이 `app/llm.py` 에 타임아웃 `float(` 을 넣은 뒤
+**매 리뷰마다 경고**했고 "OK" 분기엔 한 번도 못 갔다(항상 경고 = 장식). 28강이 어제 쓴 CLAUDE.md 의 `plugin.json` 경로도 이미 거짓이었다.
+하네스도 코드다 — 정기 자가점검으로 걷어내고, 내구성을 재고, KPI 로 값을 하는지 본다.
 
 **배우는 것**
 
-- 자가점검 = 걷어내기 + 흡수하기 — 하네스 6종(CLAUDE.md·게이트·스킬·훅·서브에이전트·플러그인)을 ✅/⚠️/❌로. 판정 근거는 감이 아니라 숫자(OTel `skill_activated`·`/usage`·`build_plugin.py --check` 드리프트)
-- 내구성 3위협 × 대응 — 담당자 이탈→"왜"를 ADR·CLAUDE.md에 / 시간→게이트 자체를 테스트(나쁜 코드 주입) / 모델 변화→결정적 층(grep·테스트)은 무관, 확률적 층(리뷰어·스킬)만 재검증. 사고 실험: 내일 다른 도구로 갈아타면 뭐가 남나
-- KPI 2단계 — 단기 프록시(적발률·작업당 비용·usage)는 게이밍되므로 위에 장기 결과(MTTD·MTTR·오탐률)를 둔다
+- 자가점검 6칸(`scripts/harness_audit.py`) — CLAUDE.md 경로 실재 · 게이트 실제 실행(규칙 밖 모듈에서만 경고하면 장식) · 스킬 `skill_activated` · 훅 등록·실재·흔적 · 서브에이전트 · 플러그인 드리프트/bump. 근거 없는 칸은 ⚪(지어내지 않는다)
+- 내구성 프로브(`scripts/harness_probe.sh`) — 나쁜 것 5종을 넣고 게이트가 막나: 게이트 생존 5/5. 모델 변화엔 결정적 층(무관)/확률적 층(재검증) 두 층
+- KPI 두 단계(`scripts/harness_kpi.py`) — 프록시(적발률·작업당 비용·usage)는 게이밍되니 위에 결과(오탐률 1/3 · MTTD·MTTR **미기록** — 장애 ADR 에 시각을 남겨야 나온다)
+- 텔레메트리는 24강이 켜 뒀다. 그런데 `settings.json` `env` 가 **셸 env 를 이겨** collector 없는 PC 에선 아무 데도 안 간다 → `scripts/otel_console.py on`(`settings.local.json`) 으로 화면에. 공식 문서 이벤트 표에 없는 `skill_activated` 가 실제로 찍힌다(`scripts/mock_otel_console.log`)
 
 **이 브랜치에 들어온 것**
 
-- **이름 선점** — 코드는 `ch4-29-start`(= `ch4-28-done` `fd7f0d1`)와 동일하고 이 안내 블록만 얹었다. 자가점검·내구성 프로브·KPI 산출물은 29강 수정 패스·촬영 뒤 여기에 **fast-forward**로 얹는다.
+- `scripts/harness_audit.py` · `harness_probe.sh` · `harness_kpi.py` · `harness_review.sh`(루틴 한 명령) · `otel_console.py` · `otel_log.py` + `mock_otel_console.log`(2.1.272 실측) · 테스트 19 · ADR 0014 · CLAUDE.md 규칙
+- **첫 리뷰의 결정**(`docs/runbook/하네스_리뷰_2026-09-15.md`): float 게이트를 `app/pension_calc.py`·`app/agent.py` 로 좁힘 · CLAUDE.md 경로 갱신 · 플러그인 **1.0.0 → 1.1.0** · `deploy_bot` 의 PII 정규식 중복은 `BACKLOG.md` 사람 큐로 · `/adr` 0회는 로그 기간 짧아 관찰
+- `.gitignore` +`settings.local.json`·`docs/otel/` · `setup.cfg` `also_copy` +BACKLOG.md
 
 **확인해 보기**
 
 ```bash
-python3 -m pytest -q                                   # 107 passed
-bash harness_check.sh                                  # PASS 6/6
-python3 scripts/build_plugin.py --check                # ✔ 드리프트 없음 — 28강이 남긴 첫 자가점검 신호
+python3 -m pytest -q                                          # 126 passed
+bash harness_check.sh                                         # PASS 6/6
+python3 scripts/harness_audit.py --otel-log scripts/mock_otel_console.log   # 여섯 칸 표
+bash scripts/harness_probe.sh                                 # 게이트 생존 5/5
+bash scripts/harness_review.sh scripts/mock_otel_console.log  # → docs/runbook/하네스_리뷰_<날짜>.md
 ```
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
