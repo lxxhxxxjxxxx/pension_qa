@@ -13,6 +13,7 @@
 
 ## 사람 큐 — 3조건 중 미충족 있음
 
+- [ ] 🟣 Pre-existing · app/deploy_bot.py:25 · PII 정규식이 guardrails 와 따로 논다(`\d{6}-\d{7}` vs `\d{6}[- ]?\d{7}` — CLAUDE.md '가드레일 한 곳' 규칙과 어긋남, 29강 자가점검 발견) · 저위험✓ 가역✓ 테스트격리✗(23강 채점 봇 영향)
 - [ ] 🟣 Pre-existing · app/main.py:9 · CLI 진입 경로에 테스트가 없다 — 커버 0% · 저위험✗ 가역✓ 테스트격리✗
 - [ ] 🟣 Pre-existing · app/retriever.py:49 · 문서 토큰을 질의마다 재계산한다 — 캐시 도입 검토 · 저위험✗ 가역✗ 테스트격리✓
 

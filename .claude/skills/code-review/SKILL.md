@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## 결정적 검증 (실제 실행 결과)
 !`grep -rEn "except\s*:" app/ || echo "OK: bare except 없음"`
-!`grep -rn "float(" app/ || echo "OK: 금액 경로에 float 없음"`
+!`grep -n "float(" app/pension_calc.py app/agent.py || echo "OK: 금액 경로에 float 없음"`
 !`python -m pytest -q 2>&1 | tail -3`
 
 ## 지시

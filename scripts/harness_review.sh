@@ -18,7 +18,7 @@ python3 scripts/harness_kpi.py "${opt[@]}" --write "$OUT" >/dev/null
 { echo; echo "## 3) 내구성 프로브"; echo; echo '```'; } >> "$OUT"
 bash scripts/harness_probe.sh >> "$OUT" 2>&1; probe_rc=$?
 { echo '```'; echo; echo "## 4) 결정 (사람)"; echo
-  grep -E "⚠️|❌" /tmp/_audit.md | sed 's/^| /- [ ] /' | cut -d'|' -f1-3 || true
+  grep -E "⚠️|❌" /tmp/_audit.md | sed 's/^| /- [ ] /' | cut -d'|' -f1-4 || true
   [ "$probe_rc" -ne 0 ] && echo "- [ ] 죽은 게이트 수리(위 프로브 ✗)"
   echo; echo "## 5) 재배포"; echo
   echo "- 결정을 \`.claude/\` 에 반영 → \`python3 scripts/build_plugin.py\` → \`.claude-plugin/plugin.json\` version bump → push → 팀은 \`/plugin update ai-product-harness@pension_qa-team\`(28강)"
