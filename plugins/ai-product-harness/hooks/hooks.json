@@ -1,33 +1,4 @@
 {
-  "env": {
-    "MCP_TIMEOUT": "3000",
-    "MCP_TOOL_TIMEOUT": "10000",
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-    "OTEL_METRICS_EXPORTER": "otlp",
-    "OTEL_LOGS_EXPORTER": "otlp",
-    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317"
-  },
-  "permissions": {
-    "deny": [
-      "Read(./secrets/**)",
-      "Read(./**/*real*)",
-      "Bash(rm -rf *)",
-      "Bash(curl *)",
-      "Bash(wget *)",
-      "WebFetch"
-    ],
-    "ask": [
-      "Bash(git push *)"
-    ],
-    "allow": [
-      "Bash(pytest *)",
-      "Bash(python -m pytest:*)",
-      "Bash(python3 -m pytest:*)",
-      "Bash(git diff:*)",
-      "Bash(grep:*)"
-    ]
-  },
   "hooks": {
     "PostToolUse": [
       {
@@ -46,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-diff-size.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/guard-diff-size.sh"
           }
         ]
       },
@@ -65,11 +36,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-external.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/guard-external.sh"
           },
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-mcp.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/guard-mcp.sh"
           }
         ]
       }
@@ -79,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/gate-pytest.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/gate-pytest.sh"
           }
         ]
       },
@@ -87,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/append-backlog.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/append-backlog.sh"
           }
         ]
       }
@@ -98,18 +69,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/audit-config-change.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/audit-config-change.sh"
           }
         ]
       }
     ]
-  },
-  "extraKnownMarketplaces": {
-    "pension_qa-team": {
-      "source": {
-        "source": "github",
-        "repo": "lxxhxxxjxxxx/pension_qa"
-      }
-    }
   }
 }

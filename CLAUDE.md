@@ -33,6 +33,8 @@
 - **요청 밖을 건드리지 말 것(surgical, 25강)** — 요청에 없는 리팩터·개선·리네이밍 금지, 인접 코드가 거슬려도 그대로(발견은 🟣 Pre-existing으로 기록만). 규칙은 유도일 뿐이라 상한은 `.claude/hooks/guard-diff-size.sh`(PreToolUse Edit|Write, 파일 5·라인 300 초과 시 다음 편집 차단)가 기계로 건다.
 - **🟡 Nit·🟣 Pre-existing 은 이 PR 에서 고치지 말 것(27강)** — 부채 큐로 보낸다. `Stop` 훅이 `BACKLOG.md` 에 자동 append 하고, 저위험·가역·테스트 격리 3조건을 전부 만족하는 것만 자동 상환 대상이다. 급한 것(🔴)만 게이트로 오늘 막는다 — 둘을 섞으면 게이트가 죽는다.
 
+- **하네스는 `.claude/` 에 고치고 플러그인은 빌드한다(28강)** — `plugins/ai-product-harness/` 를 손으로 편집하지 말 것. `python3 scripts/build_plugin.py` 로 재생성하고, 팀에 퍼뜨릴 때만 `.claude-plugin/plugin.json` 의 `version` 을 올린다(`tests/test_plugin_sync.py` 가 드리프트를 잡는다).
+
 ## 결정 기록
 - 중요한 설계 결정은 docs/adr/ 에 ADR(번호순)로 남긴다.
 - **장애 대응·긴급 패치·외부 API 교체는 장애대응 ADR로 남긴다**(24강, 예: docs/adr/0009). 임기응변 조건문으로 끝내지 않는다 — 장애→영향→원인(가설 3개로 좁힘)→결정→재발방지.

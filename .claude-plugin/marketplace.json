@@ -1,0 +1,13 @@
+{
+  "name": "pension_qa-team",
+  "description": "pension_qa 팀 전용 플러그인 카탈로그 — 이 레포가 곧 마켓플레이스다(28강)",
+  "owner": { "name": "이현정" },
+  "plugins": [
+    {
+      "name": "ai-product-harness",
+      "source": "./plugins/ai-product-harness",
+      "description": "pension_qa 팀 하네스(코드리뷰 스킬·리뷰어·게이트/부채 훅·MCP)를 한 번에",
+      "category": "development"
+    }
+  ]
+}
