@@ -1,37 +1,28 @@
-> 📚 **강의 스냅샷 — 28강을 마친 상태입니다.**  
-> 시작점 `ch4-28-start`(= `ch4-27-done`) → **지금 여기 `ch4-28-done`** → 다음 강 시작점 `ch4-29-start`(29강 준비 때 생성)
+> 📚 **강의 스냅샷 — 29강을 마친 상태입니다.**  
+> 시작점 `ch4-29-start`(= `ch4-28-done`) → **지금 여기 `ch4-29-done`** → 다음 강 시작점 `ch4-30-start`(30강 준비 때 생성)
 
-## 28강 · Plugins로 하네스를 팀에 배포
+## 29강 · 6개월 자가점검 + 내구성 + KPI
 
-27강까지 `.claude/` 에 쌓인 하네스(코드리뷰 스킬·리뷰어 4역할+렌즈 3·게이트/상한/부채/감사 훅·output-style·근거문서 MCP)는
-clone 하면 같이 오니 **이 레포 안에서는** 이미 공유된다. 그러나 팀의 다른 프로덕트엔 없고, 레포 안에서는 PR 한 번으로 꺼지고,
-버전이 없다. 그 하네스를 **하나의 플러그인**으로 묶고, 이 레포를 그대로 마켓플레이스로 삼아 배포하고, 버전·managed 로 조직 표준으로 만든다.
+28강에서 플러그인으로 묶어 팀에 배포한 하네스도 **시간이 지나면 코드베이스와 어긋난다** — 규칙이 거짓이 되고, 게이트가 형식이 되고, 훅이 왜 있는지 잊힌다.
+하네스를 **정기 자가점검**으로 걷어내고 흡수하며, **내구성**(담당자·시간·모델 변화)을 재고, **KPI**로 하네스가 값을 하는지 숫자로 본다.
 
 **배우는 것**
 
-- Plugin = skills·agents·hooks·output-styles·commands·MCP 를 한 디렉토리에 묶고 `.claude-plugin/plugin.json` 으로 정의한 **배포 단위**. 스킬은 `/ai-product-harness:code-review` 로 네임스페이스
-- `.claude/` → 플러그인에서 **바뀌는 것**: 훅 경로(`"$CLAUDE_PROJECT_DIR"/.claude/hooks/` → `"${CLAUDE_PLUGIN_ROOT}"/hooks/`) · MCP 서버는 `servers/` 로 같이 싣는다. **못 옮기는 것**: `permissions`·`env`(플러그인 `settings.json` 은 `agent`·`subagentStatusLine` 만) · CLAUDE.md·rules·memory — 팀 표준화는 플러그인(실행 하네스) + 레포(컨텍스트·권한) **두 축**
-- 손으로 복사하지 않는다 — `scripts/build_plugin.py` 가 `.claude/` 에서 빌드하고 `tests/test_plugin_sync.py` 가 드리프트를 잡는다(29강 자가점검의 씨앗)
-- 거버넌스: `version` 명시·bump(올리기 전에 `validate` + 한두 명 환경 선굴림) · managed `enabledPlugins`(`{"ai-product-harness@pension_qa-team": true}` **객체**) · `strictPluginOnlyCustomization`(켜면 이 레포의 `.claude/` 도 꺼진다) · `disableSideloadFlags`. 강제는 마지막 수단
+- 자가점검 = 걷어내기 + 흡수하기 — 하네스 6종(CLAUDE.md·게이트·스킬·훅·서브에이전트·플러그인)을 ✅/⚠️/❌로. 판정 근거는 감이 아니라 숫자(OTel `skill_activated`·`/usage`·`build_plugin.py --check` 드리프트)
+- 내구성 3위협 × 대응 — 담당자 이탈→"왜"를 ADR·CLAUDE.md에 / 시간→게이트 자체를 테스트(나쁜 코드 주입) / 모델 변화→결정적 층(grep·테스트)은 무관, 확률적 층(리뷰어·스킬)만 재검증. 사고 실험: 내일 다른 도구로 갈아타면 뭐가 남나
+- KPI 2단계 — 단기 프록시(적발률·작업당 비용·usage)는 게이밍되므로 위에 장기 결과(MTTD·MTTR·오탐률)를 둔다
 
 **이 브랜치에 들어온 것**
 
-- `.claude-plugin/marketplace.json` — 이 레포가 곧 마켓 `pension_qa-team`
-- `plugins/ai-product-harness/` — 빌드된 플러그인(매니페스트 `1.0.0` 은 손으로) · `scripts/build_plugin.py`(`--check` = 드리프트 판정)
-- `tests/test_plugin_sync.py`(7) · `docs/adr/0013-harness-plugin.md` · `CLAUDE.md` 규칙 1줄 · `.claude/settings.json` `extraKnownMarketplaces`(이 레포를 열면 마켓이 등록된다) · `.claude/commands/adr.md` 프론트매터(validate 경고 해소) · `setup.cfg` `also_copy` +plugins
+- **이름 선점** — 코드는 `ch4-29-start`(= `ch4-28-done` `fd7f0d1`)와 동일하고 이 안내 블록만 얹었다. 자가점검·내구성 프로브·KPI 산출물은 29강 수정 패스·촬영 뒤 여기에 **fast-forward**로 얹는다.
 
 **확인해 보기**
 
 ```bash
 python3 -m pytest -q                                   # 107 passed
 bash harness_check.sh                                  # PASS 6/6
-python3 scripts/build_plugin.py --check                # ✔ 드리프트 없음
-claude plugin validate plugins/ai-product-harness      # ✔ Validation passed
-claude plugin validate .                               # 마켓 카탈로그
+python3 scripts/build_plugin.py --check                # ✔ 드리프트 없음 — 28강이 남긴 첫 자가점검 신호
 ```
-
-> 이 레포 안에서는 플러그인을 **설치하지 않는다**(`.claude/` 와 2중 등록 → Stop 게이트 2회). 다른 폴더에서
-> `/plugin marketplace add lxxhxxxjxxxx/pension_qa@ch4-28-done` → `/plugin install ai-product-harness@pension_qa-team`.
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
 <!-- /강의안내 -->
