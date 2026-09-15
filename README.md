@@ -1,39 +1,29 @@
-> 📚 **강의 스냅샷 — 27강을 마친 상태입니다.**  
-> 시작점 `ch4-27-start`(= `ch4-26-done`) → **지금 여기 `ch4-27-done`** → 다음 강 시작점 `ch4-28-start`(28강 준비 때 생성)
+> 📚 **강의 스냅샷 — 28강을 마친 상태입니다.**  
+> 시작점 `ch4-28-start`(= `ch4-27-done`) → **지금 여기 `ch4-28-done`** → 다음 강 시작점 `ch4-29-start`(29강 준비 때 생성)
 
-## 27강 · 기술부채 정량추적 + 자동 백로그 + 큐 분리
+## 28강 · Plugins로 하네스를 팀에 배포
 
-26강 리뷰가 잡은 🟡 Nit·🟣 Pre-existing 은 "나중에" 하고 머지되면 어디에도 안 적히고 묻힌다.
-부채를 **감이 아니라 숫자로** 재고, 리뷰가 끝나는 순간 **자동으로 백로그에** 쌓고,
-**긴급 큐와 부채 큐를 분리**해 계획적으로 갚는다.
+27강까지 이 레포 `.claude/` 에 쌓인 하네스(코드리뷰 스킬·리뷰어 4+3·게이트/부채/감사 훅·output-style·근거문서 MCP)는
+**이 레포를 clone 한 사람에게만, 이 레포 안에서만** 켜진다. 팀의 다른 프로덕트엔 없고, 버전이 없고, 레포 안에서는 PR 한 번으로 꺼진다.
+그 하네스를 **하나의 플러그인**으로 묶어 marketplace 로 배포하고, 버전·managed 로 조직 표준으로 만든다.
 
 **배우는 것**
 
-- 부채 지도: TODO·커버리지·mutation 을 **모듈별로** 떠서 "어디가 제일 썩었나"를 국소화한다. 같은 코드면 같은 숫자 — 측정도 결정적이다
-- 자동 백로그: `Stop`·`SubagentStop` 훅이 `last_assistant_message` 에서 🟡🟣 를 뽑아 `BACKLOG.md` 에 append. **file:line 을 키로 병합**해 열 번 돌려도 한 줄로 수렴한다. 25강 output-style 포맷 제약이 여기서 파싱 가능성으로 돌아온다
-- 큐 분리: 논파(FP)는 폐기 · confirm 된 🔴 Important 는 긴급 큐(게이트, 14강) · 나머지 🟡🟣 는 부채 큐. 섞으면 양방향으로 무너진다(급한 걸 부채로 = 게이트 무의미 / 부채로 머지 막기 = 게이트 형식화, 24강)
-- 누가 갚나: 저위험 ∧ 가역 ∧ 테스트 격리 **3조건 전부**면 자동 큐, 하나라도 아니면 사람 큐. 세 조건 다 기계가 답한다 → **30강 파이널 채점 기준**
+- Plugin = skills·agents·hooks·output-styles·MCP 를 한 디렉토리에 묶고 `.claude-plugin/plugin.json` 으로 정의한 **배포 단위**. 스킬은 `/ai-product-harness:code-review` 로 네임스페이스
+- `.claude/` → 플러그인 전환에서 **그대로 옮겨지지 않는 것**: 훅 경로(`$CLAUDE_PROJECT_DIR/.claude/hooks/…` → `${CLAUDE_PLUGIN_ROOT}/hooks/…`) · `permissions`·`env` (플러그인 `settings.json` 은 `agent`·`subagentStatusLine` 만) · CLAUDE.md·rules(레포 컨텍스트)
+- marketplace = `.claude-plugin/marketplace.json` 카탈로그. 이 레포 자체가 마켓이 될 수 있다(`source: "./plugins/ai-product-harness"`)
+- 거버넌스: `version` bump · managed `enabledPlugins`(`{"plugin@marketplace": true}` **객체**) · `strictPluginOnlyCustomization` · `disableSideloadFlags` · `strictKnownMarketplaces`
 
 **이 브랜치에 들어온 것**
 
-- `scripts/scan_debt.py` — 모듈별 부채 지도(TODO·커버리지·mutation, 판정 규칙 고정)
-- `scripts/append_backlog.py` — 큐 라우팅 + `BACKLOG.md` 결정적 병합 · `scripts/mock_review_report.md`(고정 리뷰 산출)
-- `.claude/hooks/append-backlog.sh` + `settings.json` `Stop` 등록 — 21강 게이트 **옆에** 나란히(같은 이벤트 훅은 병렬로 돈다)
-- `BACKLOG.md` · `tests/test_append_backlog.py`(11) · `tests/test_scan_debt.py`(6) · `docs/adr/0012-debt-queue.md`
-- `CLAUDE.md` 부채 큐 규칙 한 줄 · `setup.cfg` `also_copy` 보강(이게 없으면 mutmut 이 통째로 죽는다)
+- (이름 선점 — 코드는 시작점 `ch4-28-start` 와 동일, 안내 README 만. 플러그인·marketplace 실물은 28강 수정 패스·촬영 뒤 fast-forward 로 얹는다)
 
 **확인해 보기**
 
 ```bash
-python3 -m pytest -q                                  # 100 passed
-bash harness_check.sh                                 # PASS 6/6
-python3 scripts/scan_debt.py                          # 부채 지도 — main.py 커버 0%가 1순위
-python3 scripts/append_backlog.py --from-aggregate    # 26강 집계의 게이트 비대상 갈래 → 부채 큐
-python3 scripts/scan_debt.py --mutation guardrails.py # 커버 100%인데 62/74 — 15강에서 올렸는데 아직 남았다
+python3 -m pytest -q        # 100 passed
+bash harness_check.sh       # PASS 6/6
 ```
-
-> 촬영은 부채를 심어 둔 **`ch4-27-debt`**(= 이 브랜치 + TODO·매직넘버)에서 시작한다.
-> 체인은 깨끗하게 유지하고, "몇 스프린트 굴린 레포"는 별도 브랜치로 재현한다(`ch2-14-buggy` 와 같은 방식).
 
 전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
 <!-- /강의안내 -->
