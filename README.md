@@ -43,12 +43,13 @@ git diff ch1-05-start..ch1-05-done --stat    # 05강이 뭘 채웠는지
 | 25 리뷰어 견고화 + 변경 범위 제어 | `ch4-25-start` | `ch4-25-done` | `.claude/output-styles/reviewer.md` · `agents/reviewer.md`(포맷 본문 내장, worktree 없음) · `code-review/checklist.md` 강화 · CLAUDE.md surgical 규칙 · `hooks/guard-diff-size.sh`+테스트+**settings.json PreToolUse 등록**(상한 exit 2) · ADR 0010 | 75 |
 | 26 적대적 리뷰어 다중화 + 결정적 집계 | `ch4-26-start` | `ch4-26-done` | `agents/reviewer-{accuracy,security,perf}.md`(렌즈별·포맷 본문 내장·worktree 없음) · `scripts/aggregate_reviews.py`+mock(≥2표·1표+기계증거·논파 폐기) · `tests/test_aggregate_reviews.py`(8) · ADR 0011 · harness ④ 진화 | 83 |
 | 27 기술부채 정량추적 + 자동 백로그 + 큐 분리 | `ch4-27-start` | `ch4-27-done` | `scripts/scan_debt.py`(모듈별 부채 지도) · `scripts/append_backlog.py`+`mock_review_report.md`(큐 라우팅·file:line 병합·3조건 자동/사람) · `hooks/append-backlog.sh`+`settings.json` `Stop` 등록(게이트와 나란히) · `BACKLOG.md` · 테스트 17 · ADR 0012 · `setup.cfg` `also_copy` 보강 | 100 |
-| 28 Plugins로 하네스를 팀에 배포 | `ch4-28-start` | `ch4-28-done` | (이름 선점 — 코드는 시작점과 동일, 안내 README만. 플러그인·marketplace 실물은 28강 수정 패스 뒤 얹는다) | 100 |
+| 28 Plugins로 하네스를 팀에 배포 | `ch4-28-start` | `ch4-28-done` | `.claude-plugin/marketplace.json`(이 레포가 곧 마켓) · `plugins/ai-product-harness/`(`scripts/build_plugin.py`가 `.claude/`에서 빌드 — 훅 경로 `${CLAUDE_PLUGIN_ROOT}`·MCP `servers/`) · `tests/test_plugin_sync.py`(7, 드리프트) · ADR 0013 · CLAUDE.md 규칙 · `settings.json` `extraKnownMarketplaces` | 107 |
 
 > 09·10·13강은 시작점 브랜치 이름이 촬영용으로 먼저 쓰이고 있어서, 표의 직전 끝점을 그대로 쓰면 됩니다.
 
 ### 실습·비교용 브랜치 (본 체인과 별개)
 
+- 28강은 별도 촬영 브랜치 없음 — `ch4-28-done`에서 시작하고, 설치는 레포 밖 빈 폴더(`~/pension_qa_v2`)에서 `/plugin marketplace add lxxhxxxjxxxx/pension_qa@ch4-28-done`.
 - `ch4-27-debt` — 27강 촬영 시작점. `ch4-27-done` + 부채 5건(TODO 4·FIXME 1, 주석만이라 동작·테스트 불변 100 passed). "몇 스프린트 굴린 레포"를 재현한다.
 같은 요청을 여러 번 돌린 **실측 결과**나, 리뷰·디버깅 연습용 상태입니다.
 
