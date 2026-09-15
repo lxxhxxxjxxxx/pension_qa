@@ -15,3 +15,7 @@ out/
 
 # ConfigChange 감사 훅 로그(24강)
 .claude/config_audit.log
+
+# 29강 텔레메트리 — 개인 설정(settings.local)과 console 로그(계정 식별자가 찍힌다)
+.claude/settings.local.json
+docs/otel/

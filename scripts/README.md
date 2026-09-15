@@ -21,3 +21,15 @@ python3 scripts/aggregate_reviews.py    # 표 + 게이트 출력, confirm된 Imp
 ```
 
 집계 규칙 검증은 `tests/test_aggregate_reviews.py`(8건) — 모델 없이 결정적으로 돈다.
+
+---
+
+# scripts/ — 29강 하네스 자가점검·내구성·KPI (ADR 0014)
+
+- `harness_review.sh [otel.log]` — 6개월 루틴 한 명령: 자가점검 → KPI → 프로브 → 결정(사람) → 재배포 안내. `docs/runbook/하네스_리뷰_<날짜>.md`
+- `harness_audit.py [--otel-log …] [--write …]` — 여섯 칸 ✅/⚠️/❌/⚪. ⚠️/❌ 있으면 exit 1
+- `harness_probe.sh` — 나쁜 것 5종 주입 → 게이트 생존 N/5(전부 되돌림, 워킹트리 깨끗해야 함)
+- `harness_kpi.py [--otel-log …] [--prs N]` — 프록시(적발률·작업당 비용·usage) / 결과(오탐률·MTTD·MTTR)
+- `otel_console.py on|off` — `settings.local.json` 으로 텔레메트리를 console 로(24강 settings env 가 셸 env 를 이기므로)
+- `otel_log.py` — console exporter 출력 파서. `mock_otel_console.log` = 2.1.272 실측 원본(식별자 가림) — 테스트·리포트 근거
+
