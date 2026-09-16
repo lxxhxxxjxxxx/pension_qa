@@ -130,6 +130,13 @@ def hook_commands() -> list[tuple[str, str]]:
         for g in groups:
             for h in g.get("hooks", []):
                 out.append((event, h.get("command", "")))
+    # 30강: 서브에이전트 프론트매터의 hooks 도 등록이다(감시자의 Bash 허용목록 훅). 안 세면 '죽은 훅'으로 오판한다.
+    for agent in sorted((ROOT / ".claude" / "agents").glob("*.md")):
+        text = agent.read_text(encoding="utf-8")
+        if not text.startswith("---"):
+            continue
+        for cmd in re.findall(r"^\s*command:\s*(.+)$", text.split("---")[1], flags=re.M):
+            out.append((f"agents/{agent.stem}", cmd.strip().strip('"').replace('\\"', '"')))
     return out
 
 
@@ -139,7 +146,7 @@ def audit_hooks(data: dict | None) -> dict:
     referenced = set()
     broken = []
     for event, cmd in cmds:
-        for s in re.findall(r"\.claude/hooks/([\w.-]+\.sh)", cmd):
+        for s in re.findall(r"/hooks/([\w.-]+\.sh)", cmd):
             referenced.add(s)
             p = scripts_dir / s
             if not p.exists():

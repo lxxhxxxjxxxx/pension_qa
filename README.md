@@ -1,31 +1,22 @@
-> 📚 **강의 스냅샷 — 30강[코스 파이널]을 마친 상태입니다.**  
-> 시작점 `ch4-30-start`(= `ch4-29-done`) → **지금 여기 `ch4-30-done`** — 체인의 끝점. 다음 강은 없다.
+> 📚 **강의 스냅샷 — 30강 촬영 시작점 `ch4-30-stale`: 도구는 있고, 사이클은 아직 한 바퀴도 안 돌았다.**  
+> 시작점 `ch4-30-start`(= `ch4-29-done`) → **지금 여기 `ch4-30-stale`** → 끝점 `ch4-30-done`(한 사이클 뒤 — 상환 1건·ADR·규칙 4)
 
-## 30강 · [코스 파이널] 부채 에이전트 + 아키텍처 가드
+## 30강 · [코스 파이널] 부채 에이전트 + 아키텍처 가드 — 촬영 시작점
 
-29강까지 조각은 다 모였다 — 리뷰어(25·26강)·부채 스캔과 백로그(27강)·팀 배포(28강)·자가점검·KPI(29강). 그런데 전부 **사람이 방아쇠를 당겨야** 돈다.
-마지막 두 조각으로 하네스를 **자율화**(부채 에이전트 — 측정 → 백로그 → 안전분 자동 상환 PR → 리뷰어 검문 → 사람 큐 → ADR)하고 **경화**(아키텍처 가드 — `guardrails → llm` 같은 레이어 위반을 편집이 파일에 닿기 전에 차단)한다. 그리고 코스의 마지막 채점 **PASS 4/4**로 닫는다.
-
-**배우는 것**
-
-- 부채 사이클 후반 — 27강 `BACKLOG.md` 자동 큐(저위험✓ 가역✓ 테스트격리✓)만 **별도 상환 흐름**이 PR로 갚고, 25·26강 리뷰어가 검문하고, 결정은 ADR로. 감시자(스캔)는 고치지 않는다
-- 아키텍처 가드 — `PreToolUse` 훅이 `app/guardrails.py`에 **들어올 편집 내용**을 grep(레이어 위반·의존 방향·금지 import), 위반이면 `exit 2`. `PostToolUse`는 이미 파일에 닿은 뒤라 못 막는다. grep은 정적 패턴만 잡으므로 CI 사전 머지 게이트·리뷰어를 겹친다
-- 코스 마지막 채점 4항목 — 측정 재현(스캔 2회 동일) · 자동 큐 안전(3조건 미충족 0) · 위반 주입(→ 게이트 차단) · 규칙 성장(우회 변종 규칙 +1)
-
-**이 브랜치에 들어온 것**
-
-- **이름 선점** — 코드는 `ch4-30-start`(= `ch4-29-done` `4b6330a`)와 동일하고 이 안내 블록만 얹었다. 부채 에이전트·상환 흐름·아키텍처 가드 훅·채점 스크립트는 30강 수정 패스·촬영 뒤 여기에 **fast-forward**로 얹는다.
+29강까지 조각은 다 모였는데 전부 **사람이 방아쇠를 당겨야** 돈다. 이 브랜치엔 30강의 도구가 얹혀 있다 — 부채 에이전트(`scripts/debt_agent.sh` + `SessionStart` 훅 + `@debt-scanner`), 상환 에이전트(`@debt-repayer` + `scripts/repay_gate.sh` + `scripts/record_repayment_adr.py`), 아키텍처 가드(`scripts/check_architecture.py` 규칙 **3개** + `.claude/hooks/guard-architecture.sh`), 채점(`scripts/grade_final.sh`).
+아직 상환은 0건, 규칙은 3개, 채점은 **3/4** — 장면 2~4에서 한 사이클을 돌리면 `ch4-30-done` 이 된다.
 
 **확인해 보기**
 
 ```bash
-python3 -m pytest -q                                   # 126 passed
-bash harness_check.sh                                  # PASS 6/6
-python3 scripts/scan_debt.py                           # 부채 지도(27강) — 30강은 이걸 사람 손 없이 돌린다
-grep -c "저위험✓ 가역✓ 테스트격리✓" BACKLOG.md          # 3 — 자동 상환 PR 후보(자동 큐)
+python3 -m pytest -q                         # 141 passed
+bash harness_check.sh                        # PASS 6/6
+bash scripts/debt_agent.sh                   # 자동 상환 후보 3건 · 사람 큐 3건 · 지표 1건
+python3 scripts/check_architecture.py --rules   # 규칙 3개
+bash scripts/grade_final.sh                  # PASS 3/4 — ④ 규칙 성장이 아직 FAIL
 ```
 
-전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
+촬영 뒤 되돌리기: `git checkout -- . && git clean -fd docs/adr && git branch -D repay/agent-34`(상환 브랜치를 만들었다면).
 <!-- /강의안내 -->
 
 > 📚 **강의 스냅샷 — 29강을 마친 상태입니다.**  

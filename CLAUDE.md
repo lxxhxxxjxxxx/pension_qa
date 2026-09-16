@@ -35,6 +35,8 @@
 
 - **하네스도 코드다 — 정기 자가점검한다(29강)** — `bash scripts/harness_review.sh` 가 여섯 칸 판정·KPI·내구성 프로브를 한 번에 돌린다(`docs/runbook/하네스_리뷰_*.md`). 게이트가 규칙 밖 모듈에서 경고하면 게이트를 규칙 범위로 좁힌다(항상 경고 = 장식). 결과 지표(MTTD·MTTR)는 장애 ADR에 `- 발생:`·`- 발견:`·`- 복구:` 시각을 남겨야 나온다.
 - **하네스는 `.claude/` 에 고치고 플러그인은 빌드한다(28강)** — `plugins/ai-product-harness/` 를 손으로 편집하지 말 것. `python3 scripts/build_plugin.py` 로 재생성하고, 팀에 퍼뜨릴 때만 `plugins/ai-product-harness/.claude-plugin/plugin.json` 의 `version` 을 올린다(`tests/test_plugin_sync.py` 가 드리프트를 잡는다).
+- **아키텍처 규칙은 문서가 아니라 훅이 건다(30강)** — 규칙표는 `scripts/check_architecture.py` 한 곳(레이어 위반·의존 방향·금지 import·동적 import). `.claude/hooks/guard-architecture.sh`(PreToolUse Edit|Write)가 편집이 파일에 닿기 **전에** 검사하고, 같은 규칙을 파일 층(`python3 scripts/check_architecture.py`, CI·채점)이 머지 전에 한 번 더 본다. 뚫리면 규칙표에 한 줄 더 — 규칙은 자란다(25강).
+- **부채는 에이전트가 감시하고, 상환은 따로 간다(30강)** — `scripts/debt_agent.sh`가 세션마다(SessionStart 훅) 스캔·백로그·요약을 돌리고, 주기는 스케줄러(`.claude/loop.md` · `docs/ci/debt-agent.yml`)가 `@debt-scanner`를 부른다. 자동 큐(3조건 ✓✓✓)만 `@debt-repayer`가 **한 항목 한 커밋**으로 갚고 `scripts/repay_gate.sh`(검문 5/5) → `scripts/record_repayment_adr.py`(ADR 자동·백로그 체크). 감시자는 고치지 않는다 — Bash 허용목록 훅이 보장한다. 코스 마지막 채점은 `bash scripts/grade_final.sh`(PASS 4/4).
 
 ## 결정 기록
 - 중요한 설계 결정은 docs/adr/ 에 ADR(번호순)로 남긴다.

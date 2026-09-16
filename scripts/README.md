@@ -33,3 +33,13 @@ python3 scripts/aggregate_reviews.py    # 표 + 게이트 출력, confirm된 Imp
 - `otel_console.py on|off` — `settings.local.json` 으로 텔레메트리를 console 로(24강 settings env 가 셸 env 를 이기므로)
 - `otel_log.py` — console exporter 출력 파서. `mock_otel_console.log` = 2.1.272 실측 원본(식별자 가림) — 테스트·리포트 근거
 
+
+---
+
+# scripts/ — 30강 부채 에이전트 · 아키텍처 가드 · 코스 마지막 채점 (ADR 0015)
+
+- `debt_agent.sh [--quiet] [--review]` — 부채 에이전트의 결정적 몸통: `scan_debt.py --to-backlog` → 자동/사람/지표 큐 요약 → 다음 상환 대상. `--review` 면 29강 `harness_review.sh` 까지. 방아쇠: SessionStart 훅(이벤트) · `.claude/loop.md`/`docs/ci/debt-agent.yml`(주기)
+- `check_architecture.py [--hook | --rules | 파일…]` — 아키텍처 규칙표(레이어·의존 방향·금지 import·동적 import) 한 곳. `--hook` 은 PreToolUse 입력에서 들어올 내용(exit 2), 파일 인자는 머지된 파일(exit 1, CI·채점)
+- `repay_gate.sh <file:line> [base]` — 상환 커밋 검문 5항(그 파일 하나·surgical 상한·아키텍처·테스트·자동 큐 항목). 5/5 만 머지
+- `record_repayment_adr.py <file:line> --commit <sha>` — 상환 ADR 자동 기록 + BACKLOG 체크(멱등, 사람 큐 거부)
+- `grade_final.sh` — 코스 마지막 채점 PASS 4/4(측정 재현 · 자동 큐 3조건 · 위반 주입 두 층 · 규칙 성장)

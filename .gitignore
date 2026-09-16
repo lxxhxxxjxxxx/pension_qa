@@ -19,3 +19,6 @@ out/
 # 29강 텔레메트리 — 개인 설정(settings.local)과 console 로그(계정 식별자가 찍힌다)
 .claude/settings.local.json
 docs/otel/
+
+# 30강 부채 에이전트 흔적(세션마다 한 줄 — 워킹트리를 더럽히지 않는다)
+.claude/debt_agent.log

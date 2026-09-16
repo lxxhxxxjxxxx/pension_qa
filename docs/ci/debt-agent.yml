@@ -1,0 +1,25 @@
+# 30강 — 부채 에이전트의 '주기' 방아쇠(예시). 훅은 스케줄이 없고 서브에이전트를 못 부른다(공식 hooks·sub-agents 문서) —
+# 그래서 주기는 스케줄러 몫이다. 세션 안이면 `/loop 1d`(7일 만료·세션 열려 있어야), 머신이면 Desktop scheduled task,
+# 레포 단위로 사람 없이 돌리려면 GitHub Actions `schedule` + `claude -p`. 이 파일은 .github/workflows/ 로 옮겨 쓰는 예시다.
+name: debt-agent
+on:
+  schedule:
+    - cron: "0 0 * * 1"      # 매주 월요일 09:00 KST — 27강 스캔 + 29강 자가점검을 사람 손 없이
+  workflow_dispatch:
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt pytest pytest-cov
+      - run: bash scripts/debt_agent.sh --review            # 결정적 층 — API 키 없이 돈다
+      - run: python3 scripts/check_architecture.py           # 아키텍처 파일 층(머지된 코드에 같은 규칙)
+      - name: 상환 PR (자동 큐 첫 항목)                      # 확률적 층 — 키가 있을 때만
+        if: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+        env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" }
+        run: |
+          item=$(awk '/^## 자동 큐/{p=1;next} /^## 사람 큐/{p=0} p' BACKLOG.md | grep -m1 '^- \[ \]' | awk -F' · ' '{print $2}')
+          [ -n "$item" ] && claude -p "@debt-repayer $item" --permission-mode acceptEdits --allowed-tools "Edit,Read,Bash(git *),Bash(python3 *),Bash(bash scripts/*)" || echo "자동 큐 비어 있음"
+      - run: git push origin 'refs/heads/repay/*' || true

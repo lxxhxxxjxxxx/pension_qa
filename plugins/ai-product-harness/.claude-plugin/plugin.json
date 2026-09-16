@@ -1,8 +1,15 @@
 {
   "name": "ai-product-harness",
-  "description": "pension_qa 팀 하네스 — 코드리뷰 스킬(13강)·리뷰어 4역할+렌즈 3(07·25·26강)·게이트/상한/부채/감사 훅(14·21·24·25·27강)·리뷰 output-style(25강)·근거문서 MCP(18·22강)",
-  "version": "1.1.0",
-  "author": { "name": "이현정" },
+  "description": "pension_qa 팀 하네스 — 코드리뷰 스킬(13강)·리뷰어 4역할+렌즈 3(07·25·26강)·게이트/상한/부채/감사·아키텍처 훅(14·21·24·25·27·30강)·리뷰 output-style(25강)·근거문서 MCP(18·22강)·부채 에이전트/상환 에이전트(30강)",
+  "version": "1.2.0",
+  "author": {
+    "name": "이현정"
+  },
   "repository": "https://github.com/lxxhxxxjxxxx/pension_qa",
-  "keywords": ["pension_qa", "harness", "review", "hooks"]
+  "keywords": [
+    "pension_qa",
+    "harness",
+    "review",
+    "hooks"
+  ]
 }
