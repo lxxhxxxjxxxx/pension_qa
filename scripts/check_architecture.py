@@ -60,6 +60,15 @@ RULES: list[dict] = [
         "msg": "결정적 계층에 네트워크·LLM 라이브러리가 들어올 수 없다",
         "since": "30강 규칙 3",
     },
+    {
+        # 채점 ③ 을 두 줄 importlib 이 뚫었다(2026-09-15 라이브) — 규칙 1 은 텍스트에 보이는 import 만 잡는다. 그래서 통로 자체를 막는다.
+        "id": 4,
+        "name": "동적 import",
+        "targets": DETERMINISTIC,
+        "pattern": r"\b(importlib|__import__)\b",
+        "msg": "결정적 계층에서 동적 import(importlib·__import__)는 금지 — 정적 규칙을 우회하는 통로",
+        "since": "30강 규칙 4 (채점 ③ 뚫림 → 추가, 25강 루프)",
+    },
 ]
 
 
