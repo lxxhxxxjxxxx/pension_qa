@@ -1,22 +1,37 @@
-> 📚 **강의 스냅샷 — 30강 촬영 시작점 `ch4-30-stale`: 도구는 있고, 사이클은 아직 한 바퀴도 안 돌았다.**  
-> 시작점 `ch4-30-start`(= `ch4-29-done`) → **지금 여기 `ch4-30-stale`** → 끝점 `ch4-30-done`(한 사이클 뒤 — 상환 1건·ADR·규칙 4)
+> 📚 **강의 스냅샷 — 30강[코스 파이널]을 마친 상태입니다. 체인의 끝점 — 다음 강은 없습니다.**  
+> 시작점 `ch4-30-start`(= `ch4-29-done`) → 촬영 시작점 `ch4-30-stale`(도구만·사이클 전) → **지금 여기 `ch4-30-done`**
 
-## 30강 · [코스 파이널] 부채 에이전트 + 아키텍처 가드 — 촬영 시작점
+## 30강 · [코스 파이널] 부채 에이전트 + 아키텍처 가드
 
-29강까지 조각은 다 모였는데 전부 **사람이 방아쇠를 당겨야** 돈다. 이 브랜치엔 30강의 도구가 얹혀 있다 — 부채 에이전트(`scripts/debt_agent.sh` + `SessionStart` 훅 + `@debt-scanner`), 상환 에이전트(`@debt-repayer` + `scripts/repay_gate.sh` + `scripts/record_repayment_adr.py`), 아키텍처 가드(`scripts/check_architecture.py` 규칙 **3개** + `.claude/hooks/guard-architecture.sh`), 채점(`scripts/grade_final.sh`).
-아직 상환은 0건, 규칙은 3개, 채점은 **3/4** — 장면 2~4에서 한 사이클을 돌리면 `ch4-30-done` 이 된다.
+29강까지 조각은 다 모였다 — 리뷰어(25·26강)·부채 스캔과 백로그(27강)·팀 배포(28강)·자가점검·KPI(29강). 그런데 전부 **사람이 방아쇠를 당겨야** 돈다.
+마지막 두 조각으로 **자율화**(부채 에이전트 — 측정 → 백로그 → 안전분 자동 상환 PR → 검문 → ADR)하고 **경화**(아키텍처 가드 — `guardrails → llm` 같은 레이어 위반을 편집이 파일에 닿기 전에 차단)했다. 그리고 코스의 마지막 채점 **PASS 4/4**.
+
+**배우는 것**
+
+- 방아쇠를 사람에게서 뗀다 — 그러나 훅은 서브에이전트를 못 부르고 스케줄도 없다(공식). **이벤트 → 스크립트**(`SessionStart` 훅 → `scripts/debt_agent.sh`: 스캔·백로그·요약이 세션 첫 화면에), **주기 → 스케줄러 → 에이전트**(`.claude/loop.md` · `docs/ci/debt-agent.yml` → `@agent-debt-scanner`)
+- 감시자는 고치지 않는다 — `tools: Read, Grep, Bash` 는 유도일 뿐(Bash 로 쓴다). 보장은 프론트매터 `hooks: PreToolUse Bash`(`guard-readonly-bash.sh` 허용목록, 라이브 실측: `echo > 파일` 차단·스캔 통과)
+- 상환은 별도 에이전트가 **한 항목 한 커밋** — `@agent-debt-repayer app/agent.py:34` → `repay/agent-34` → `scripts/repay_gate.sh` **검문 5/5** → `scripts/record_repayment_adr.py` → ADR 0016 + BACKLOG `[x]`
+- 아키텍처 가드 두 층 — 규칙표 `scripts/check_architecture.py`(**4개**) 를 훅 층(`guard-architecture.sh`, PreToolUse Edit|Write, exit 2)과 파일 층(CI·채점)이 같이 쓴다. `from . import llm` 은 막혔고 두 줄 `importlib` 은 뚫렸다 → 규칙 4(동적 import 금지)가 자랐다
+- 코스 마지막 채점 `bash scripts/grade_final.sh` — ① 측정 재현 ② 자동 큐 3조건 ③ 위반 주입 두 층 ④ 규칙 성장 → **PASS 4/4**
+
+**이 브랜치에 들어온 것**
+
+- `.claude/agents/debt-scanner.md`(+Bash 허용목록 훅) · `debt-repayer.md` · `.claude/hooks/guard-architecture.sh` · `guard-readonly-bash.sh` · `debt-agent-session.sh` · `settings.json` PreToolUse(아키텍처)·SessionStart · `.claude/loop.md`
+- `scripts/check_architecture.py`(규칙 4) · `debt_agent.sh` · `repay_gate.sh` · `record_repayment_adr.py` · `grade_final.sh` · `docs/ci/debt-agent.yml` · 테스트 15 · ADR 0015(설계)·**0016(자동 상환 1건)** · CLAUDE.md 규칙 2줄 · 플러그인 **1.1.0 → 1.2.0**
+- 상환 1건: `app/agent.py:34` `names → source_names`(커밋 `84c9f5e`, 검문 5/5) · `BACKLOG.md` 자동 큐 1건 체크
 
 **확인해 보기**
 
 ```bash
-python3 -m pytest -q                         # 141 passed
-bash harness_check.sh                        # PASS 6/6
-bash scripts/debt_agent.sh                   # 자동 상환 후보 3건 · 사람 큐 3건 · 지표 1건
-python3 scripts/check_architecture.py --rules   # 규칙 3개
-bash scripts/grade_final.sh                  # PASS 3/4 — ④ 규칙 성장이 아직 FAIL
+python3 -m pytest -q                            # 141 passed
+bash harness_check.sh                           # PASS 6/6
+bash scripts/debt_agent.sh                      # 자동 상환 후보 2건 · 사람 큐 3건 · 지표 1건
+python3 scripts/check_architecture.py --rules   # 규칙 4개
+bash scripts/repay_gate.sh app/agent.py:34      # 검문 5/5
+bash scripts/grade_final.sh                     # PASS 4/4 — 코스의 마지막 화면
 ```
 
-촬영 뒤 되돌리기: `git checkout -- . && git clean -fd docs/adr && git branch -D repay/agent-34`(상환 브랜치를 만들었다면).
+전체 강별 브랜치 지도는 [`main` 브랜치 README](../../tree/main#강의별-브랜치-지도)에 있습니다.
 <!-- /강의안내 -->
 
 > 📚 **강의 스냅샷 — 29강을 마친 상태입니다.**  
