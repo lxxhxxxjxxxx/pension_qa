@@ -31,21 +31,21 @@ def ask(question: str) -> Result:
     if not docs:
         return Result("관련 근거 문서를 찾지 못해 답변하지 않습니다.", blocked=True)
 
-    names = [d.name for d in docs]
+    source_names = [d.name for d in docs]
 
     # 근거 부실 게이트(ADR 0002) — 하드 미달이면 LLM을 부르지 않고 보류한다.
     evidence = guardrails.check_evidence(found.coverage)
     if evidence.level == guardrails.EVIDENCE_BLOCK:
-        return Result(evidence.reason, sources=names, blocked=True)
+        return Result(evidence.reason, sources=source_names, blocked=True)
 
     raw = llm.answer(question, [d.text for d in docs])
 
     leak = guardrails.check_output_leak(raw)
     if not leak.ok:
-        return Result(leak.reason, sources=names, blocked=True)
+        return Result(leak.reason, sources=source_names, blocked=True)
 
     return Result(
         guardrails.mask_emails(raw),
-        sources=names,
+        sources=source_names,
         low_confidence=evidence.level == guardrails.EVIDENCE_LOW,
     )
