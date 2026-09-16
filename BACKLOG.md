@@ -7,7 +7,7 @@
 
 ## 자동 큐 — 3조건 전부 충족 (에이전트가 상환)
 
-- [ ] 🟡 Nit · app/agent.py:34 · 변수명 names 가 모호 — source_names 가 읽힌다 · 저위험✓ 가역✓ 테스트격리✓
+- [x] 🟡 Nit · app/agent.py:34 · 변수명 names 가 모호 — source_names 가 읽힌다 · 저위험✓ 가역✓ 테스트격리✓
 - [ ] 🟡 Nit · app/retriever.py:33 · 변수명 docs 가 모호 — 26강 집계에서도 같은 자리가 나왔다(병합되어 한 줄로 수렴한다) · 저위험✓ 가역✓ 테스트격리✓
 - [ ] 🟡 Nit · app/retriever.py:35 · 상위 k 기본값 2 가 매직넘버 — 모듈 상수로 빼면 의도가 드러난다 · 저위험✓ 가역✓ 테스트격리✓
 
