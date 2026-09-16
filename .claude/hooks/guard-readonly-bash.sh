@@ -4,6 +4,7 @@
 #   07강 "Write 없음 = 역할 강제"는 유도, 보장은 이 훅이다: 감시자가 칠 수 있는 명령은 아래 목록뿐. 나머지는 exit 2.
 #   목록 밖이 필요해지면 목록에 한 줄 더(규칙은 보이는 곳에).
 IN=$(cat)
+[ -n "${DEBT_HOOK_LOG:-}" ] && printf '[%s] readonly-hook %s\n' "$(date +%T)" "$(printf %s "$IN" | head -c 200)" >> "$DEBT_HOOK_LOG"   # 실측용: 훅이 실제로 불렸나
 cmd=$(printf %s "$IN" | python3 -c 'import json,sys; print((json.load(sys.stdin).get("tool_input") or {}).get("command",""))' 2>/dev/null)
 [ -n "$cmd" ] || exit 0
 # 파일로 쓰는 통로는 통째로 막는다(리다이렉션·tee·sed -i·git 쓰기·인라인 파이썬)
